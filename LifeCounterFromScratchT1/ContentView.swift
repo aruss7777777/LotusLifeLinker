@@ -10,7 +10,7 @@ struct ContentView: View {
                 MainMenu { selectedView in
                     activeView = selectedView
                 }
-            } else if activeView == "OnePlayer" {
+            }		 else if activeView == "OnePlayer" {
                 OnePlayer {
                     previousView = "OnePlayer"
                     activeView = "InGameMenu"
@@ -55,7 +55,7 @@ struct ContentView: View {
                     },
                     onNavigateToMainMenu: {
                         activeView = "MainMenu" // Navigate to the Main Menu
-                    },
+		                    },
                     onResetGame: {
                         // Reset action. Since TwoPlayer manages its own state,
                         // this closure will be passed from TwoPlayer.

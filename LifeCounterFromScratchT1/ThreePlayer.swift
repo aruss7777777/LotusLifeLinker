@@ -58,7 +58,7 @@ struct ThreePlayer: View {
                 HStack(spacing: 0){
                     VStack(spacing: 0){
                         Button(action: {
-                            life3 -= 1
+                            life3 += 1
                         }) {
                             VStack {
                             }
@@ -68,7 +68,7 @@ struct ThreePlayer: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         
                         Button(action: {
-                            life3 += 1
+                            life3 -= 1
                         }) {
                             Text("")
                                 .frame(maxWidth: .infinity, maxHeight: .infinity)

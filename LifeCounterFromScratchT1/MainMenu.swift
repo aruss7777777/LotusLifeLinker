@@ -14,52 +14,68 @@ struct MainMenu: View {
 
     var body: some View {
         ZStack{
-            Color.green.edgesIgnoringSafeArea(.all)
+            Color.cyan.edgesIgnoringSafeArea(.all)
             VStack {
-                
-                Text("Main Menu")
+                Spacer()
+                Text("Players")
                     .font(.system(size: 50))
                 
                 
-                Button(action: {onMenuSelection("OnePlayer")}) {Text("1 Player")
-                        .font(.system(size: 25))
-
+                HStack{
+                    Button(action: {onMenuSelection("OnePlayer")}) {
+                        Image("1")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100) // You can adjust the size as needed
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Button(action: {onMenuSelection("TwoPlayer")}) {
+                        Image("2")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100) // You can adjust the size as needed
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Button(action: {onMenuSelection("ThreePlayer")}) {
+                        Image("3")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100) // You can adjust the size as needed
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                HStack{
+                    Button(action: {onMenuSelection("FourPlayer")}) {
+                        Image("4") // Replace with your image name
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100) // You can adjust the size as needed
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Button(action: {onMenuSelection("FivePlayer")}) {
+                        Image("5") // Replace with your image name
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100) // You can adjust the size as needed
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    Button(action: {onMenuSelection("SixPlayer")}) {
+                        Image("6") // Replace with your image name
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 100, height: 100) // You can adjust the size as needed
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+                Button(action: {onMenuSelection("EightPlayer")}) {
+                    Image("8") // Replace with your image name
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 100, height: 100) // You can adjust the size as needed
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-               
-                Button(action: {onMenuSelection("TwoPlayer")}) {Text("2 Players")
-                        .font(.system(size: 25))
-
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                Button(action: {onMenuSelection("ThreePlayer")}) {Text("3 Players")
-                        .font(.system(size: 25))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                Button(action: {onMenuSelection("FourPlayer")}) {Text("4 Players")
-                        .font(.system(size: 25))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                Button(action: {onMenuSelection("FivePlayer")}) {Text("5 Players")
-                        .font(.system(size: 25))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                Button(action: {onMenuSelection("SixPlayer")}) {Text("6 Players")
-                        .font(.system(size: 25))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                
-                Button(action: {onMenuSelection("EightPlayer")}) {Text("8 Players")
-                        .font(.system(size: 25))
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-
-
-                
+           
+              Spacer()
             }
         }
     }
