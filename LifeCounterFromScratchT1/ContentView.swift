@@ -1,8 +1,26 @@
 import SwiftUI
 
+struct PlayerBoxStyle: Equatable {
+    var backgroundColor: Color
+    var fontColor: Color
+}
+
 struct ContentView: View {
     @State private var activeView: String = "MainMenu"
     @State private var previousView: String = "MainMenu"
+    @State private var fourPlayerStyles: [PlayerBoxStyle] = [
+        PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
+        PlayerBoxStyle(backgroundColor: .green, fontColor: .white),
+        PlayerBoxStyle(backgroundColor: .yellow, fontColor: .black),
+        PlayerBoxStyle(backgroundColor: .orange, fontColor: .black)
+    ]
+    @State private var fourPlayerNames: [String] = [
+        "Player 1",
+        "Player 2",
+        "Player 3",
+        "Player 4"
+    ]
+    @State private var isEditingFourPlayerBoxes: Bool = false
 
     var body: some View {
         VStack {
@@ -26,10 +44,15 @@ struct ContentView: View {
                     activeView = "InGameMenu"
                 })
             }else if activeView == "FourPlayer" {
-                FourPlayer(onInGameMenu: {
-                    previousView = "FourPlayer"
-                    activeView = "InGameMenu"
-                })
+                FourPlayer(
+                    playerStyles: $fourPlayerStyles,
+                    playerNames: $fourPlayerNames,
+                    isEditingBoxes: $isEditingFourPlayerBoxes,
+                    onInGameMenu: {
+                        previousView = "FourPlayer"
+                        activeView = "InGameMenu"
+                    }
+                )
             }else if activeView == "FivePlayer" {
                 FivePlayer(onInGameMenu: {
                     previousView = "FivePlayer"
@@ -59,6 +82,11 @@ struct ContentView: View {
                     onResetGame: {
                         // Reset action. Since TwoPlayer manages its own state,
                         // this closure will be passed from TwoPlayer.
+                    },
+                    canEditPlayerBoxes: previousView == "FourPlayer",
+                    onStartEditingPlayerBoxes: {
+                        isEditingFourPlayerBoxes = true
+                        activeView = previousView
                     }
                 )
             }

@@ -4,6 +4,8 @@ struct InGameMenu: View {
     var onBackToMenu: () -> Void
     var onNavigateToMainMenu: () -> Void
     var onResetGame: () -> Void
+    var canEditPlayerBoxes: Bool = false
+    var onStartEditingPlayerBoxes: (() -> Void)? = nil
 
     var body: some View {
         ZStack {
@@ -16,11 +18,19 @@ struct InGameMenu: View {
                     .font(.system(size: 72))
                     .foregroundColor(.white)
 
-//                Button("Change Colors") {
-//                    // Add action here
-//                }
-//                .foregroundColor(.white)
-//                .padding()
+                if canEditPlayerBoxes {
+                    Button("Customize") {
+                        onStartEditingPlayerBoxes?()
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                } else {
+                    Button("Customize") {
+                    }
+                    .foregroundColor(.white.opacity(0.4))
+                    .padding()
+                    .disabled(true)
+                }
 
                 Button("Main Menu") {
                     onNavigateToMainMenu()
@@ -51,7 +61,9 @@ struct InGameMenu_Previews: PreviewProvider {
         InGameMenu(
             onBackToMenu: { print("Return button tapped") },
             onNavigateToMainMenu: { print("Main Menu button tapped") },
-            onResetGame: { print("game reset") }
+            onResetGame: { print("game reset") },
+            canEditPlayerBoxes: true,
+            onStartEditingPlayerBoxes: { print("edit player boxes") }
         )
     }
 }
