@@ -31,12 +31,27 @@ struct WheelWedge: Shape {
     }
 }
 
+struct PlayerLayoutOption: Identifiable {
+    let title: String
+    let viewName: String
+    let leftCount: Int
+    let rightCount: Int?
+    let bottomCount: Int?
+
+    var id: String {
+        viewName
+    }
+}
+
 struct MainMenu: View {
     var onMenuSelection: (String) -> Void
 
     @State private var wheelRotation: Double = 0
     @State private var dragStartAngle: Double?
     @State private var dragStartRotation: Double = 0
+    @State private var selectedThreePlayerLayout: String = "ThreePlayer"
+    @State private var selectedFivePlayerLayout: String = "FivePlayer"
+    @State private var selectedSevenPlayerLayout: String = "SevenPlayer"
 
     private let playerCounts = Array(1...8)
     private let segmentDegrees: Double = 45
@@ -56,13 +71,17 @@ struct MainMenu: View {
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 28) {
+                VStack(spacing: 22) {
                     Text("Select number of players")
                         .font(.system(size: 36, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.black)
 
                     wheelSelector(size: min(geometry.size.width * 0.86, 350))
+
+                    if let layoutOptions = selectedLayoutOptions {
+                        layoutOptionView(layoutOptions)
+                    }
 
                     Spacer(minLength: 0)
                 }
@@ -122,7 +141,7 @@ struct MainMenu: View {
             }
 
             Button {
-                onMenuSelection(viewName(for: selectedPlayerCount))
+                onMenuSelection(selectedViewName)
             } label: {
                 VStack(spacing: 2) {
                     Image(systemName: "arrowtriangle.up.fill")
@@ -156,6 +175,204 @@ struct MainMenu: View {
                     }
                 }
         )
+    }
+
+    private var selectedViewName: String {
+        if selectedPlayerCount == 3 {
+            return selectedThreePlayerLayout
+        }
+
+        if selectedPlayerCount == 5 {
+            return selectedFivePlayerLayout
+        }
+
+        if selectedPlayerCount == 7 {
+            return selectedSevenPlayerLayout
+        }
+
+        return viewName(for: selectedPlayerCount)
+    }
+
+    private var selectedLayoutOptions: [PlayerLayoutOption]? {
+        switch selectedPlayerCount {
+        case 3:
+            return [
+                PlayerLayoutOption(title: "Classic", viewName: "ThreePlayer", leftCount: 2, rightCount: nil, bottomCount: 1),
+                PlayerLayoutOption(title: "2 / 1 Split", viewName: "ThreePlayerSplit", leftCount: 2, rightCount: 1, bottomCount: nil)
+            ]
+        case 5:
+            return [
+                PlayerLayoutOption(title: "Classic", viewName: "FivePlayer", leftCount: 2, rightCount: 2, bottomCount: 1),
+                PlayerLayoutOption(title: "3 / 2 Split", viewName: "FivePlayerSplit", leftCount: 3, rightCount: 2, bottomCount: nil)
+            ]
+        case 7:
+            return [
+                PlayerLayoutOption(title: "Classic", viewName: "SevenPlayer", leftCount: 3, rightCount: 3, bottomCount: 1),
+                PlayerLayoutOption(title: "4 / 3 Split", viewName: "SevenPlayerSplit", leftCount: 4, rightCount: 3, bottomCount: nil)
+            ]
+        default:
+            return nil
+        }
+    }
+
+    private func layoutOptionView(_ options: [PlayerLayoutOption]) -> some View {
+        HStack(spacing: 12) {
+            ForEach(options) { option in
+                layoutButton(option)
+            }
+        }
+        .frame(maxWidth: 330)
+        .transition(.opacity.combined(with: .scale(scale: 0.96)))
+    }
+
+    private func layoutButton(_ option: PlayerLayoutOption) -> some View {
+        let isSelected = selectedViewName == option.viewName
+
+        return Button {
+            selectLayout(option.viewName)
+        } label: {
+            VStack(spacing: 6) {
+                Text(option.title)
+                    .font(.system(size: 15, weight: .bold, design: .rounded))
+
+                layoutIllustration(option)
+            }
+            .foregroundStyle(.black)
+            .padding(8)
+            .frame(maxWidth: .infinity)
+            .background(isSelected ? Color.green.opacity(0.78) : Color.white.opacity(0.44))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(isSelected ? Color.white : Color.black.opacity(0.18), lineWidth: isSelected ? 3 : 1)
+            }
+        }
+    }
+
+    private func layoutIllustration(_ option: PlayerLayoutOption) -> some View {
+        Group {
+            switch option.viewName {
+            case "ThreePlayer":
+                VStack(spacing: 2) {
+                    HStack(spacing: 2) {
+                        miniCell(label: "1", rotation: .degrees(90))
+                        miniCell(label: "2", rotation: .degrees(270))
+                    }
+
+                    miniCell(label: "3", rotation: .degrees(0))
+                }
+
+            case "ThreePlayerSplit":
+                HStack(spacing: 2) {
+                    VStack(spacing: 2) {
+                        miniCell(label: "1", rotation: .degrees(90))
+                        miniCell(label: "3", rotation: .degrees(90))
+                    }
+
+                    miniCell(label: "2", rotation: .degrees(270))
+                }
+
+            case "FivePlayer":
+                VStack(spacing: 2) {
+                    HStack(spacing: 2) {
+                        miniCell(label: "1", rotation: .degrees(90))
+                        miniCell(label: "2", rotation: .degrees(270))
+                    }
+
+                    HStack(spacing: 2) {
+                        miniCell(label: "3", rotation: .degrees(90))
+                        miniCell(label: "4", rotation: .degrees(270))
+                    }
+
+                    miniCell(label: "5", rotation: .degrees(0))
+                }
+
+            case "FivePlayerSplit":
+                HStack(spacing: 2) {
+                    VStack(spacing: 2) {
+                        miniCell(label: "1", rotation: .degrees(90))
+                        miniCell(label: "3", rotation: .degrees(90))
+                        miniCell(label: "5", rotation: .degrees(90))
+                    }
+
+                    VStack(spacing: 2) {
+                        miniCell(label: "2", rotation: .degrees(270))
+                        miniCell(label: "4", rotation: .degrees(270))
+                    }
+                }
+
+            case "SevenPlayer":
+                VStack(spacing: 2) {
+                    HStack(spacing: 2) {
+                        miniCell(label: "1", rotation: .degrees(90))
+                        miniCell(label: "2", rotation: .degrees(270))
+                    }
+
+                    HStack(spacing: 2) {
+                        miniCell(label: "3", rotation: .degrees(90))
+                        miniCell(label: "4", rotation: .degrees(270))
+                    }
+
+                    HStack(spacing: 2) {
+                        miniCell(label: "5", rotation: .degrees(90))
+                        miniCell(label: "6", rotation: .degrees(270))
+                    }
+
+                    miniCell(label: "7", rotation: .degrees(0))
+                }
+
+            case "SevenPlayerSplit":
+                HStack(spacing: 2) {
+                    VStack(spacing: 2) {
+                        miniCell(label: "1", rotation: .degrees(90))
+                        miniCell(label: "3", rotation: .degrees(90))
+                        miniCell(label: "5", rotation: .degrees(90))
+                        miniCell(label: "7", rotation: .degrees(90))
+                    }
+
+                    VStack(spacing: 2) {
+                        miniCell(label: "2", rotation: .degrees(270))
+                        miniCell(label: "4", rotation: .degrees(270))
+                        miniCell(label: "6", rotation: .degrees(270))
+                    }
+                }
+
+            default:
+                EmptyView()
+            }
+        }
+        .frame(height: 72)
+    }
+
+    private func miniCell(label: String, rotation: Angle) -> some View {
+        RoundedRectangle(cornerRadius: 5)
+            .fill(Color.black.opacity(0.2))
+            .overlay {
+                Text(label)
+                    .font(.system(size: 12, weight: .black, design: .rounded))
+                    .foregroundStyle(.black)
+                    .rotationEffect(rotation)
+                    .minimumScaleFactor(0.6)
+                    .lineLimit(1)
+                    .padding(2)
+            }
+    }
+
+    private func miniCell(label: String) -> some View {
+        miniCell(label: label, rotation: .degrees(0))
+    }
+
+    private func selectLayout(_ viewName: String) {
+        switch selectedPlayerCount {
+        case 3:
+            selectedThreePlayerLayout = viewName
+        case 5:
+            selectedFivePlayerLayout = viewName
+        case 7:
+            selectedSevenPlayerLayout = viewName
+        default:
+            break
+        }
     }
 
     private func wedgeColor(for count: Int) -> Color {

@@ -23,6 +23,9 @@
 		651BD3FE2B1ED40E00B77C42 /* SixPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651BD3FD2B1ED40E00B77C42 /* SixPlayer.swift */; };
 		65D7671B2B1FC4B10061A443 /* EightPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D7671A2B1FC4B10061A443 /* EightPlayer.swift */; };
 		65D849482FAFD17500AFEEAA /* SevenPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849472FAFD17500AFEEAA /* SevenPlayer.swift */; };
+		65D8494A2FAFD46B00AFEEAA /* FivePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */; };
+		65D8494C2FAFD51C00AFEEAA /* ThreePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */; };
+		65D8494E2FAFD54900AFEEAA /* SevenPlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */; };
 		65F9E8322B1E69060062DF50 /* InGameMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F9E8312B1E69060062DF50 /* InGameMenu.swift */; };
 /* End PBXBuildFile section */
 
@@ -63,6 +66,9 @@
 		651BD3FD2B1ED40E00B77C42 /* SixPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SixPlayer.swift; sourceTree = "<group>"; };
 		65D7671A2B1FC4B10061A443 /* EightPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EightPlayer.swift; sourceTree = "<group>"; };
 		65D849472FAFD17500AFEEAA /* SevenPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenPlayer.swift; sourceTree = "<group>"; };
+		65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FivePlayerSplit.swift; sourceTree = "<group>"; };
+		65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreePlayerSplit.swift; sourceTree = "<group>"; };
+		65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenPlayerSplit.swift; sourceTree = "<group>"; };
 		65F9E8312B1E69060062DF50 /* InGameMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InGameMenu.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -128,6 +134,9 @@
 				651093012B1D755100213E0C /* Assets.xcassets */,
 				651093032B1D755100213E0C /* Preview Content */,
 				65D849472FAFD17500AFEEAA /* SevenPlayer.swift */,
+				65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */,
+				65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */,
+				65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */,
 			);
 			path = LifeCounterFromScratchT1;
 			sourceTree = "<group>";
@@ -291,12 +300,15 @@
 				651BD3FC2B1ECCCC00B77C42 /* FivePlayer.swift in Sources */,
 				651BD3FE2B1ED40E00B77C42 /* SixPlayer.swift in Sources */,
 				6510932C2B1D93FB00213E0C /* MainMenu.swift in Sources */,
+				65D8494C2FAFD51C00AFEEAA /* ThreePlayerSplit.swift in Sources */,
+				65D8494A2FAFD46B00AFEEAA /* FivePlayerSplit.swift in Sources */,
 				651093002B1D755000213E0C /* ContentView.swift in Sources */,
 				6510932A2B1D849800213E0C /* TwoPlayer.swift in Sources */,
 				65F9E8322B1E69060062DF50 /* InGameMenu.swift in Sources */,
 				651BD3FA2B1EC53C00B77C42 /* FourPlayer.swift in Sources */,
 				651BD3F82B1EBF1600B77C42 /* ThreePlayer.swift in Sources */,
 				651093282B1D834100213E0C /* OnePlayer.swift in Sources */,
+				65D8494E2FAFD54900AFEEAA /* SevenPlayerSplit.swift in Sources */,
 				65D849482FAFD17500AFEEAA /* SevenPlayer.swift in Sources */,
 				651092FE2B1D755000213E0C /* LifeCounterFromScratchT1App.swift in Sources */,
 			);

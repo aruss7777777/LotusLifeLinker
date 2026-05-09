@@ -478,6 +478,17 @@ struct ContentView: View {
                         activeView = "InGameMenu"
                     }
                 )
+            } else if displayedView == "ThreePlayerSplit" {
+                ThreePlayerSplit(
+                    playerLives: $threePlayerLives,
+                    playerStyles: $threePlayerStyles,
+                    playerNames: $threePlayerNames,
+                    isEditingBoxes: $isEditingThreePlayerBoxes,
+                    onInGameMenu: {
+                        previousView = "ThreePlayerSplit"
+                        activeView = "InGameMenu"
+                    }
+                )
             } else if displayedView == "FourPlayer" {
                 FourPlayer(
                     playerLives: $fourPlayerLives,
@@ -500,6 +511,17 @@ struct ContentView: View {
                         activeView = "InGameMenu"
                     }
                 )
+            } else if displayedView == "FivePlayerSplit" {
+                FivePlayerSplit(
+                    playerLives: $fivePlayerLives,
+                    playerStyles: $fivePlayerStyles,
+                    playerNames: $fivePlayerNames,
+                    isEditingBoxes: $isEditingFivePlayerBoxes,
+                    onInGameMenu: {
+                        previousView = "FivePlayerSplit"
+                        activeView = "InGameMenu"
+                    }
+                )
             } else if displayedView == "SixPlayer" {
                 SixPlayer(
                     playerLives: $sixPlayerLives,
@@ -519,6 +541,17 @@ struct ContentView: View {
                     isEditingBoxes: $isEditingSevenPlayerBoxes,
                     onInGameMenu: {
                         previousView = "SevenPlayer"
+                        activeView = "InGameMenu"
+                    }
+                )
+            } else if displayedView == "SevenPlayerSplit" {
+                SevenPlayerSplit(
+                    playerLives: $sevenPlayerLives,
+                    playerStyles: $sevenPlayerStyles,
+                    playerNames: $sevenPlayerNames,
+                    isEditingBoxes: $isEditingSevenPlayerBoxes,
+                    onInGameMenu: {
+                        previousView = "SevenPlayerSplit"
                         activeView = "InGameMenu"
                     }
                 )
@@ -554,7 +587,7 @@ struct ContentView: View {
                                 PlayerBoxStyle(backgroundColor: .green, fontColor: .white)
                             ]
                             twoPlayerNames = ["Player 1", "Player 2"]
-                        } else if previousView == "ThreePlayer" {
+                        } else if previousView == "ThreePlayer" || previousView == "ThreePlayerSplit" {
                             threePlayerLives = [40, 40, 40]
                             threePlayerStyles = [
                                 PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
@@ -576,7 +609,7 @@ struct ContentView: View {
                                 "Player 3",
                                 "Player 4"
                             ]
-                        } else if previousView == "FivePlayer" {
+                        } else if previousView == "FivePlayer" || previousView == "FivePlayerSplit" {
                             fivePlayerLives = [40, 40, 40, 40, 40]
                             fivePlayerStyles = [
                                 PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
@@ -610,7 +643,7 @@ struct ContentView: View {
                                 "Player 5",
                                 "Player 6"
                             ]
-                        } else if previousView == "SevenPlayer" {
+                        } else if previousView == "SevenPlayer" || previousView == "SevenPlayerSplit" {
                             sevenPlayerLives = [40, 40, 40, 40, 40, 40, 40]
                             sevenPlayerStyles = [
                                 PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
@@ -665,15 +698,15 @@ struct ContentView: View {
                             isEditingOnePlayerBoxes = true
                         } else if previousView == "TwoPlayer" {
                             isEditingTwoPlayerBoxes = true
-                        } else if previousView == "ThreePlayer" {
+                        } else if previousView == "ThreePlayer" || previousView == "ThreePlayerSplit" {
                             isEditingThreePlayerBoxes = true
                         } else if previousView == "FourPlayer" {
                             isEditingFourPlayerBoxes = true
-                        } else if previousView == "FivePlayer" {
+                        } else if previousView == "FivePlayer" || previousView == "FivePlayerSplit" {
                             isEditingFivePlayerBoxes = true
                         } else if previousView == "SixPlayer" {
                             isEditingSixPlayerBoxes = true
-                        } else if previousView == "SevenPlayer" {
+                        } else if previousView == "SevenPlayer" || previousView == "SevenPlayerSplit" {
                             isEditingSevenPlayerBoxes = true
                         } else if previousView == "EightPlayer" {
                             isEditingEightPlayerBoxes = true
