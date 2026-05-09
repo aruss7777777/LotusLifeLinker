@@ -26,6 +26,8 @@ struct OnePlayer: View {
 
                 playerInfoCell(for: 0, rotation: .degrees(0))
 
+                playerDividerOverlay
+
                 if isEditingBoxes {
                     customizationOverlay
                     playerSelectionOverlay
@@ -221,6 +223,13 @@ struct OnePlayer: View {
         }
 
         return 1
+    }
+
+    private var playerDividerOverlay: some View {
+        Rectangle()
+            .strokeBorder(Color.white.opacity(0.18), lineWidth: 2)
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
     }
 
     private var playerSelectionOverlay: some View {

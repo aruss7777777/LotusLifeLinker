@@ -315,6 +315,7 @@ struct ContentView: View {
                 )
             }
         }
+        .statusBarHidden(true)
     }
 }
 

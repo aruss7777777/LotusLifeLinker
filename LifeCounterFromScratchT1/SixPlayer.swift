@@ -42,6 +42,8 @@ struct SixPlayer: View {
                     }
                 }
 
+                playerDividerOverlay
+
                 if isEditingBoxes {
                     Color.black.opacity(0.2)
                         .ignoresSafeArea()
@@ -268,6 +270,37 @@ struct SixPlayer: View {
         }
 
         return 1
+    }
+
+    private var playerDividerOverlay: some View {
+        GeometryReader { geometry in
+            ZStack {
+                Rectangle()
+                    .fill(Color.black.opacity(0.42))
+                    .frame(width: 8)
+                    .frame(maxHeight: .infinity)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+
+                Rectangle()
+                    .fill(Color.black.opacity(0.42))
+                    .frame(height: 8)
+                    .frame(maxWidth: .infinity)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 3)
+
+                Rectangle()
+                    .fill(Color.black.opacity(0.42))
+                    .frame(height: 8)
+                    .frame(maxWidth: .infinity)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height * 2 / 3)
+
+                Rectangle()
+                    .strokeBorder(Color.white.opacity(0.18), lineWidth: 2)
+                    .ignoresSafeArea()
+            }
+            .shadow(color: .black.opacity(0.25), radius: 4)
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
     }
 
     private var playerSelectionOverlay: some View {
