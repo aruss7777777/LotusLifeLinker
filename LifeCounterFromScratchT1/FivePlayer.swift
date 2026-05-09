@@ -21,13 +21,13 @@ struct FivePlayer: View {
             ZStack {
                 VStack(spacing: 0) {
                     HStack(spacing: 0) {
-                        horizontalPlayerControl(for: 0, leftChange: -1, rightChange: 1)
-                        horizontalPlayerControl(for: 1, leftChange: 1, rightChange: -1)
+                        verticalPlayerControl(for: 0, topChange: 1, bottomChange: -1)
+                        verticalPlayerControl(for: 1, topChange: 1, bottomChange: -1)
                     }
 
                     HStack(spacing: 0) {
-                        horizontalPlayerControl(for: 2, leftChange: -1, rightChange: 1)
-                        horizontalPlayerControl(for: 3, leftChange: 1, rightChange: -1)
+                        verticalPlayerControl(for: 2, topChange: 1, bottomChange: -1)
+                        verticalPlayerControl(for: 3, topChange: 1, bottomChange: -1)
                     }
 
                     verticalPlayerControl(for: 4, topChange: 1, bottomChange: -1)

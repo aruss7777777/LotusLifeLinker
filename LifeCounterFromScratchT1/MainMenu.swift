@@ -45,6 +45,9 @@ struct PlayerLayoutOption: Identifiable {
 
 struct MainMenu: View {
     var onMenuSelection: (String) -> Void
+    var savedGames: [SavedGame] = []
+    var onLoadGame: ((SavedGame) -> Void)? = nil
+    var onDeleteGame: ((UUID) -> Void)? = nil
 
     @State private var wheelRotation: Double = 0
     @State private var dragStartAngle: Double?
@@ -52,6 +55,7 @@ struct MainMenu: View {
     @State private var selectedThreePlayerLayout: String = "ThreePlayer"
     @State private var selectedFivePlayerLayout: String = "FivePlayer"
     @State private var selectedSevenPlayerLayout: String = "SevenPlayer"
+    @State private var showingSavedGames: Bool = false
 
     private let playerCounts = Array(1...8)
     private let segmentDegrees: Double = 45
@@ -65,29 +69,149 @@ struct MainMenu: View {
         GeometryReader { geometry in
             ZStack {
                 LinearGradient(
-                    colors: [Color.cyan, Color.teal.opacity(0.75), Color.green.opacity(0.55)],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
+                    colors: [Color(red: 0.05, green: 0.08, blue: 0.2), Color(red: 0.08, green: 0.12, blue: 0.32)],
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
                 .ignoresSafeArea()
 
-                VStack(spacing: 22) {
-                    Text("Select number of players")
-                        .font(.system(size: 36, weight: .bold, design: .rounded))
+                VStack(spacing: 14) {
+                    Text("Select Players")
+                        .font(.system(size: 30, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.white)
 
-                    wheelSelector(size: min(geometry.size.width * 0.86, 350))
+                    let wheelSize = min(geometry.size.width * 0.78, 310)
+                    wheelSelector(size: wheelSize)
 
-                    if let layoutOptions = selectedLayoutOptions {
-                        layoutOptionView(layoutOptions)
+                    // Fixed-height container so the wheel doesn't shift
+                    ZStack {
+                        if let layoutOptions = selectedLayoutOptions {
+                            layoutOptionView(layoutOptions)
+                        }
                     }
+                    .frame(height: 170)
 
                     Spacer(minLength: 0)
+
+                    if !savedGames.isEmpty {
+                        Button {
+                            showingSavedGames = true
+                        } label: {
+                            HStack(spacing: 8) {
+                                Image(systemName: "folder.fill")
+                                    .font(.system(size: 16, weight: .semibold))
+
+                                Text("Load Game")
+                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                            }
+                            .foregroundStyle(.white)
+                            .padding(.vertical, 12)
+                            .padding(.horizontal, 24)
+                            .background(Color.white.opacity(0.15))
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .overlay {
+                                RoundedRectangle(cornerRadius: 14)
+                                    .stroke(Color(red: 0.85, green: 0.7, blue: 0.25), lineWidth: 2)
+                            }
+                        }
+                        .padding(.bottom, 30)
+                    }
                 }
-                .padding(.top, 46)
+                .padding(.top, 30)
                 .padding(.horizontal, 18)
+
+                if showingSavedGames {
+                    savedGamesOverlay
+                }
             }
+        }
+    }
+
+    private var savedGamesOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.5)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    showingSavedGames = false
+                }
+
+            VStack(spacing: 0) {
+                HStack {
+                    Text("Saved Games")
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button {
+                        showingSavedGames = false
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 26))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 12)
+
+                if savedGames.isEmpty {
+                    Text("No saved games")
+                        .foregroundStyle(.white.opacity(0.6))
+                        .padding(.vertical, 40)
+                } else {
+                    ScrollView {
+                        VStack(spacing: 8) {
+                            ForEach(savedGames) { game in
+                                savedGameRow(game)
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.bottom, 20)
+                    }
+                    .frame(maxHeight: 400)
+                }
+            }
+            .frame(maxWidth: 340)
+            .background(Color(red: 0.1, green: 0.14, blue: 0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.4), radius: 20)
+        }
+    }
+
+    private func savedGameRow(_ game: SavedGame) -> some View {
+        Button {
+            onLoadGame?(game)
+            showingSavedGames = false
+        } label: {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(game.name)
+                        .font(.system(size: 17, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    Text("\(game.playerLives.count)P  \u{2022}  \(game.date.formatted(date: .abbreviated, time: .shortened))")
+                        .font(.system(size: 13, weight: .medium, design: .rounded))
+                        .foregroundStyle(.white.opacity(0.6))
+                }
+
+                Spacer()
+
+                Button {
+                    onDeleteGame?(game.id)
+                } label: {
+                    Image(systemName: "trash")
+                        .font(.system(size: 15))
+                        .foregroundStyle(.red.opacity(0.8))
+                        .padding(8)
+                        .contentShape(Rectangle())
+                }
+            }
+            .padding(.vertical, 10)
+            .padding(.horizontal, 14)
+            .background(Color.white.opacity(0.08))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
 
@@ -96,12 +220,12 @@ struct MainMenu: View {
 
         return ZStack {
             Circle()
-                .fill(Color.black.opacity(0.16))
+                .fill(Color(red: 0.12, green: 0.16, blue: 0.35))
                 .overlay {
                     Circle()
-                        .stroke(Color.black.opacity(0.22), lineWidth: 6)
+                        .stroke(Color(red: 0.85, green: 0.7, blue: 0.25), lineWidth: 6)
                 }
-                .shadow(color: .black.opacity(0.18), radius: 12, y: 8)
+                .shadow(color: .black.opacity(0.4), radius: 12, y: 8)
 
             ForEach(playerCounts, id: \.self) { count in
                 let centerAngle = Double(count - 1) * segmentDegrees
@@ -112,7 +236,7 @@ struct MainMenu: View {
                     endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
                     innerRadiusRatio: 0.42
                 )
-                .fill(isSelected ? Color.green : wedgeColor(for: count))
+                .fill(isSelected ? Color(red: 0.85, green: 0.7, blue: 0.25) : wedgeColor(for: count))
                 .contentShape(
                     WheelWedge(
                         startAngle: .degrees(centerAngle - (segmentDegrees / 2) - 90 + wheelRotation),
@@ -129,12 +253,12 @@ struct MainMenu: View {
                         endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
                         innerRadiusRatio: 0.42
                     )
-                    .stroke(Color.black.opacity(0.24), lineWidth: 2)
+                    .stroke(Color(red: 0.15, green: 0.25, blue: 0.55), lineWidth: 2)
                 }
 
                 Text("\(count)")
                     .font(.system(size: isSelected ? 40 : 34, weight: .black, design: .rounded))
-                    .foregroundStyle(isSelected ? .white : .black)
+                    .foregroundStyle(isSelected ? .white : Color(red: 0.1, green: 0.15, blue: 0.3))
                     .offset(y: -labelRadius)
                     .rotationEffect(.degrees(centerAngle + wheelRotation))
                     .allowsHitTesting(false)
@@ -152,11 +276,11 @@ struct MainMenu: View {
                 }
                 .foregroundStyle(.white)
                 .frame(width: size * 0.42, height: size * 0.42)
-                .background(Color.green)
+                .background(Color(red: 0.85, green: 0.7, blue: 0.25))
                 .clipShape(Circle())
                 .overlay {
                     Circle()
-                        .stroke(Color.white.opacity(0.9), lineWidth: 4)
+                        .stroke(Color(red: 1.0, green: 0.9, blue: 0.55), lineWidth: 4)
                 }
                 .shadow(color: .black.opacity(0.25), radius: 8, y: 5)
             }
@@ -237,14 +361,14 @@ struct MainMenu: View {
 
                 layoutIllustration(option)
             }
-            .foregroundStyle(.black)
+            .foregroundStyle(.white)
             .padding(8)
             .frame(maxWidth: .infinity)
-            .background(isSelected ? Color.green.opacity(0.78) : Color.white.opacity(0.44))
+            .background(isSelected ? Color(red: 0.85, green: 0.7, blue: 0.25).opacity(0.78) : Color.white.opacity(0.12))
             .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay {
                 RoundedRectangle(cornerRadius: 14)
-                    .stroke(isSelected ? Color.white : Color.black.opacity(0.18), lineWidth: isSelected ? 3 : 1)
+                    .stroke(isSelected ? Color(red: 0.85, green: 0.7, blue: 0.25) : Color.white.opacity(0.3), lineWidth: isSelected ? 3 : 1)
             }
         }
     }
@@ -341,16 +465,16 @@ struct MainMenu: View {
                 EmptyView()
             }
         }
-        .frame(height: 72)
+        .frame(height: 120)
     }
 
     private func miniCell(label: String, rotation: Angle) -> some View {
         RoundedRectangle(cornerRadius: 5)
-            .fill(Color.black.opacity(0.2))
+            .fill(Color.white.opacity(0.2))
             .overlay {
                 Text(label)
                     .font(.system(size: 12, weight: .black, design: .rounded))
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.white)
                     .rotationEffect(rotation)
                     .minimumScaleFactor(0.6)
                     .lineLimit(1)
@@ -376,7 +500,7 @@ struct MainMenu: View {
     }
 
     private func wedgeColor(for count: Int) -> Color {
-        count.isMultiple(of: 2) ? Color.white.opacity(0.76) : Color.yellow.opacity(0.62)
+        count.isMultiple(of: 2) ? Color(white: 0.82) : Color(white: 0.9)
     }
 
     private func updateWheelRotation(with value: DragGesture.Value, size: CGFloat) {

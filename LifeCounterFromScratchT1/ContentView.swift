@@ -11,6 +11,105 @@ struct PlayerBoxStyle: Equatable {
     var backgroundImageOffset: CGSize = .zero
 }
 
+// MARK: - Save/Load Models
+
+struct CodableColor: Codable {
+    let red: Double
+    let green: Double
+    let blue: Double
+    let alpha: Double
+
+    init(_ color: Color) {
+        let uiColor = UIColor(color)
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
+        uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+        self.red = Double(r)
+        self.green = Double(g)
+        self.blue = Double(b)
+        self.alpha = Double(a)
+    }
+
+    var color: Color {
+        Color(red: red, green: green, blue: blue, opacity: alpha)
+    }
+}
+
+struct SavedPlayerStyle: Codable {
+    var backgroundColor: CodableColor
+    var fontColor: CodableColor
+    var isTextOutlined: Bool
+    var backgroundImageData: Data?
+    var backgroundImageScale: Double
+    var backgroundImageOffsetWidth: Double
+    var backgroundImageOffsetHeight: Double
+
+    init(from style: PlayerBoxStyle) {
+        self.backgroundColor = CodableColor(style.backgroundColor)
+        self.fontColor = CodableColor(style.fontColor)
+        self.isTextOutlined = style.isTextOutlined
+        self.backgroundImageData = style.backgroundImageData
+        self.backgroundImageScale = Double(style.backgroundImageScale)
+        self.backgroundImageOffsetWidth = Double(style.backgroundImageOffset.width)
+        self.backgroundImageOffsetHeight = Double(style.backgroundImageOffset.height)
+    }
+
+    var toPlayerBoxStyle: PlayerBoxStyle {
+        PlayerBoxStyle(
+            backgroundColor: backgroundColor.color,
+            fontColor: fontColor.color,
+            isTextOutlined: isTextOutlined,
+            backgroundImageData: backgroundImageData,
+            backgroundImageScale: CGFloat(backgroundImageScale),
+            backgroundImageOffset: CGSize(width: backgroundImageOffsetWidth, height: backgroundImageOffsetHeight)
+        )
+    }
+}
+
+struct SavedGame: Codable, Identifiable {
+    let id: UUID
+    let name: String
+    let date: Date
+    let viewName: String
+    let playerLives: [Int]
+    let playerNames: [String]
+    let playerStyles: [SavedPlayerStyle]
+}
+
+struct GameSaveManager {
+    private static var saveFileURL: URL {
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return docs.appendingPathComponent("savedGames.json")
+    }
+
+    static func loadAll() -> [SavedGame] {
+        guard let data = try? Data(contentsOf: saveFileURL),
+              let games = try? JSONDecoder().decode([SavedGame].self, from: data) else {
+            return []
+        }
+        return games.sorted { $0.date > $1.date }
+    }
+
+    static func save(_ game: SavedGame) {
+        var games = loadAll()
+        games.insert(game, at: 0)
+        writeAll(games)
+    }
+
+    static func delete(_ id: UUID) {
+        var games = loadAll()
+        games.removeAll { $0.id == id }
+        writeAll(games)
+    }
+
+    private static func writeAll(_ games: [SavedGame]) {
+        guard let data = try? JSONEncoder().encode(games) else { return }
+        try? data.write(to: saveFileURL)
+    }
+}
+
 extension Color {
     var inverseColor: Color {
         let uiColor = UIColor(self)
@@ -434,6 +533,7 @@ struct ContentView: View {
     @State private var eightPlayerLives: [Int] = [40, 40, 40, 40, 40, 40, 40, 40]
     @State private var isEditingEightPlayerBoxes: Bool = false
     @State private var keepScreenAwake: Bool = true
+    @State private var savedGames: [SavedGame] = []
     
     private var displayedView: String {
         activeView == "InGameMenu" ? previousView : activeView
@@ -442,9 +542,19 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if displayedView == "MainMenu" {
-                MainMenu { selectedView in
-                    activeView = selectedView
-                }
+                MainMenu(
+                    onMenuSelection: { selectedView in
+                        activeView = selectedView
+                    },
+                    savedGames: savedGames,
+                    onLoadGame: { game in
+                        loadGame(game)
+                    },
+                    onDeleteGame: { id in
+                        GameSaveManager.delete(id)
+                        savedGames = GameSaveManager.loadAll()
+                    }
+                )
             } else if displayedView == "OnePlayer" {
                 OnePlayer(
                     playerLives: $onePlayerLives,
@@ -713,6 +823,9 @@ struct ContentView: View {
                         }
                         activeView = previousView
                     },
+                    onSaveGame: { name in
+                        saveCurrentGame(name: name)
+                    },
                     keepScreenAwake: $keepScreenAwake
                 )
             }
@@ -720,6 +833,7 @@ struct ContentView: View {
         .statusBarHidden(true)
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = keepScreenAwake
+            savedGames = GameSaveManager.loadAll()
         }
         .onChange(of: keepScreenAwake) { _, newValue in
             UIApplication.shared.isIdleTimerDisabled = newValue
@@ -727,6 +841,106 @@ struct ContentView: View {
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
         }
+    }
+
+    private func currentLives() -> [Int] {
+        switch previousView {
+        case "OnePlayer": return onePlayerLives
+        case "TwoPlayer": return twoPlayerLives
+        case "ThreePlayer", "ThreePlayerSplit": return threePlayerLives
+        case "FourPlayer": return fourPlayerLives
+        case "FivePlayer", "FivePlayerSplit": return fivePlayerLives
+        case "SixPlayer": return sixPlayerLives
+        case "SevenPlayer", "SevenPlayerSplit": return sevenPlayerLives
+        case "EightPlayer": return eightPlayerLives
+        default: return []
+        }
+    }
+
+    private func currentNames() -> [String] {
+        switch previousView {
+        case "OnePlayer": return onePlayerNames
+        case "TwoPlayer": return twoPlayerNames
+        case "ThreePlayer", "ThreePlayerSplit": return threePlayerNames
+        case "FourPlayer": return fourPlayerNames
+        case "FivePlayer", "FivePlayerSplit": return fivePlayerNames
+        case "SixPlayer": return sixPlayerNames
+        case "SevenPlayer", "SevenPlayerSplit": return sevenPlayerNames
+        case "EightPlayer": return eightPlayerNames
+        default: return []
+        }
+    }
+
+    private func currentStyles() -> [PlayerBoxStyle] {
+        switch previousView {
+        case "OnePlayer": return onePlayerStyles
+        case "TwoPlayer": return twoPlayerStyles
+        case "ThreePlayer", "ThreePlayerSplit": return threePlayerStyles
+        case "FourPlayer": return fourPlayerStyles
+        case "FivePlayer", "FivePlayerSplit": return fivePlayerStyles
+        case "SixPlayer": return sixPlayerStyles
+        case "SevenPlayer", "SevenPlayerSplit": return sevenPlayerStyles
+        case "EightPlayer": return eightPlayerStyles
+        default: return []
+        }
+    }
+
+    private func saveCurrentGame(name: String) {
+        let game = SavedGame(
+            id: UUID(),
+            name: name,
+            date: Date(),
+            viewName: previousView,
+            playerLives: currentLives(),
+            playerNames: currentNames(),
+            playerStyles: currentStyles().map { SavedPlayerStyle(from: $0) }
+        )
+        GameSaveManager.save(game)
+        savedGames = GameSaveManager.loadAll()
+    }
+
+    private func loadGame(_ game: SavedGame) {
+        let styles = game.playerStyles.map { $0.toPlayerBoxStyle }
+        let viewName = game.viewName
+
+        switch viewName {
+        case "OnePlayer":
+            onePlayerLives = game.playerLives
+            onePlayerNames = game.playerNames
+            onePlayerStyles = styles
+        case "TwoPlayer":
+            twoPlayerLives = game.playerLives
+            twoPlayerNames = game.playerNames
+            twoPlayerStyles = styles
+        case "ThreePlayer", "ThreePlayerSplit":
+            threePlayerLives = game.playerLives
+            threePlayerNames = game.playerNames
+            threePlayerStyles = styles
+        case "FourPlayer":
+            fourPlayerLives = game.playerLives
+            fourPlayerNames = game.playerNames
+            fourPlayerStyles = styles
+        case "FivePlayer", "FivePlayerSplit":
+            fivePlayerLives = game.playerLives
+            fivePlayerNames = game.playerNames
+            fivePlayerStyles = styles
+        case "SixPlayer":
+            sixPlayerLives = game.playerLives
+            sixPlayerNames = game.playerNames
+            sixPlayerStyles = styles
+        case "SevenPlayer", "SevenPlayerSplit":
+            sevenPlayerLives = game.playerLives
+            sevenPlayerNames = game.playerNames
+            sevenPlayerStyles = styles
+        case "EightPlayer":
+            eightPlayerLives = game.playerLives
+            eightPlayerNames = game.playerNames
+            eightPlayerStyles = styles
+        default:
+            break
+        }
+
+        activeView = viewName
     }
 }
 

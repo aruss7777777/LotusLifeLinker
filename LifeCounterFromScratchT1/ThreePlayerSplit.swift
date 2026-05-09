@@ -21,8 +21,8 @@ struct ThreePlayerSplit: View {
             ZStack {
                 HStack(spacing: 0) {
                     VStack(spacing: 0) {
-                        verticalPlayerControl(for: 0, topChange: -1, bottomChange: 1)
-                        verticalPlayerControl(for: 2, topChange: -1, bottomChange: 1)
+                        verticalPlayerControl(for: 0, topChange: 1, bottomChange: -1)
+                        verticalPlayerControl(for: 2, topChange: 1, bottomChange: -1)
                     }
 
                     verticalPlayerControl(for: 1, topChange: 1, bottomChange: -1)

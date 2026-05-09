@@ -74,8 +74,8 @@ struct SevenPlayer: View {
 
     private func playerRow(leftPlayer: Int, rightPlayer: Int) -> some View {
         HStack(spacing: 0) {
-            horizontalPlayerControl(for: leftPlayer, leftChange: -1, rightChange: 1)
-            horizontalPlayerControl(for: rightPlayer, leftChange: 1, rightChange: -1)
+            verticalPlayerControl(for: leftPlayer, topChange: 1, bottomChange: -1)
+            verticalPlayerControl(for: rightPlayer, topChange: 1, bottomChange: -1)
         }
     }
 

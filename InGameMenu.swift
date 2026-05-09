@@ -6,9 +6,13 @@ struct InGameMenu: View {
     var onResetGame: () -> Void
     var canEditPlayerBoxes: Bool = false
     var onStartEditingPlayerBoxes: (() -> Void)? = nil
+    var onSaveGame: ((String) -> Void)? = nil
     @Binding var keepScreenAwake: Bool
     @State private var showingHomeConfirmation: Bool = false
     @State private var showingSettings: Bool = false
+    @State private var showingSaveGame: Bool = false
+    @State private var saveName: String = ""
+    @State private var showingSaveConfirmation: Bool = false
 
     var body: some View {
         ZStack {
@@ -17,7 +21,9 @@ struct InGameMenu: View {
                 .allowsHitTesting(false)
 
             VStack(spacing: 10) {
-                if showingSettings {
+                if showingSaveGame {
+                    saveGameContent
+                } else if showingSettings {
                     settingsContent
                 } else {
                     menuContent
@@ -48,12 +54,19 @@ struct InGameMenu: View {
                 Button {
                     onStartEditingPlayerBoxes?()
                 } label: {
-                    menuRow(title: "Customize")
+                    menuRow(title: "Customize", systemImage: "pencil")
                 }
             } else {
-                menuRow(title: "Customize")
+                menuRow(title: "Customize", systemImage: "pencil")
                     .foregroundStyle(.black.opacity(0.55))
                     .opacity(0.6)
+            }
+
+            Button {
+                saveName = ""
+                showingSaveGame = true
+            } label: {
+                menuRow(title: "Save Game", systemImage: "square.and.arrow.down.fill")
             }
 
             Button {
@@ -105,6 +118,43 @@ struct InGameMenu: View {
 
             Button {
                 showingSettings = false
+            } label: {
+                menuRow(title: "Back", systemImage: "arrow.backward")
+            }
+        }
+    }
+
+    private var saveGameContent: some View {
+        Group {
+            Text("Save Game")
+                .font(.system(size: 34, weight: .bold, design: .rounded))
+                .foregroundStyle(.black)
+
+            if showingSaveConfirmation {
+                Text("Game Saved!")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(.green)
+                    .padding(.vertical, 8)
+            } else {
+                TextField("Enter save name", text: $saveName)
+                    .textFieldStyle(.roundedBorder)
+                    .padding(.horizontal, 4)
+
+                Button {
+                    let nameToUse = saveName.trimmingCharacters(in: .whitespaces).isEmpty ? "Untitled Save" : saveName
+                    onSaveGame?(nameToUse)
+                    showingSaveConfirmation = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.2) {
+                        showingSaveConfirmation = false
+                        showingSaveGame = false
+                    }
+                } label: {
+                    menuRow(title: "Save", systemImage: "checkmark")
+                }
+            }
+
+            Button {
+                showingSaveGame = false
             } label: {
                 menuRow(title: "Back", systemImage: "arrow.backward")
             }
