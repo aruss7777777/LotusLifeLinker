@@ -391,6 +391,26 @@ struct ContentView: View {
     ]
     @State private var sixPlayerLives: [Int] = [40, 40, 40, 40, 40, 40]
     @State private var isEditingSixPlayerBoxes: Bool = false
+    @State private var sevenPlayerStyles: [PlayerBoxStyle] = [
+        PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
+        PlayerBoxStyle(backgroundColor: .green, fontColor: .white),
+        PlayerBoxStyle(backgroundColor: .yellow, fontColor: .black),
+        PlayerBoxStyle(backgroundColor: .orange, fontColor: .black),
+        PlayerBoxStyle(backgroundColor: .pink, fontColor: .black),
+        PlayerBoxStyle(backgroundColor: .purple, fontColor: .white),
+        PlayerBoxStyle(backgroundColor: .white, fontColor: .black)
+    ]
+    @State private var sevenPlayerNames: [String] = [
+        "Player 1",
+        "Player 2",
+        "Player 3",
+        "Player 4",
+        "Player 5",
+        "Player 6",
+        "Player 7"
+    ]
+    @State private var sevenPlayerLives: [Int] = [40, 40, 40, 40, 40, 40, 40]
+    @State private var isEditingSevenPlayerBoxes: Bool = false
     @State private var eightPlayerStyles: [PlayerBoxStyle] = [
         PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
         PlayerBoxStyle(backgroundColor: .green, fontColor: .white),
@@ -491,6 +511,17 @@ struct ContentView: View {
                         activeView = "InGameMenu"
                     }
                 )
+            } else if displayedView == "SevenPlayer" {
+                SevenPlayer(
+                    playerLives: $sevenPlayerLives,
+                    playerStyles: $sevenPlayerStyles,
+                    playerNames: $sevenPlayerNames,
+                    isEditingBoxes: $isEditingSevenPlayerBoxes,
+                    onInGameMenu: {
+                        previousView = "SevenPlayer"
+                        activeView = "InGameMenu"
+                    }
+                )
             } else if displayedView == "EightPlayer" {
                 EightPlayer(
                     playerLives: $eightPlayerLives,
@@ -579,6 +610,26 @@ struct ContentView: View {
                                 "Player 5",
                                 "Player 6"
                             ]
+                        } else if previousView == "SevenPlayer" {
+                            sevenPlayerLives = [40, 40, 40, 40, 40, 40, 40]
+                            sevenPlayerStyles = [
+                                PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
+                                PlayerBoxStyle(backgroundColor: .green, fontColor: .white),
+                                PlayerBoxStyle(backgroundColor: .yellow, fontColor: .black),
+                                PlayerBoxStyle(backgroundColor: .orange, fontColor: .black),
+                                PlayerBoxStyle(backgroundColor: .pink, fontColor: .black),
+                                PlayerBoxStyle(backgroundColor: .purple, fontColor: .white),
+                                PlayerBoxStyle(backgroundColor: .white, fontColor: .black)
+                            ]
+                            sevenPlayerNames = [
+                                "Player 1",
+                                "Player 2",
+                                "Player 3",
+                                "Player 4",
+                                "Player 5",
+                                "Player 6",
+                                "Player 7"
+                            ]
                         } else if previousView == "EightPlayer" {
                             eightPlayerLives = [40, 40, 40, 40, 40, 40, 40, 40]
                             eightPlayerStyles = [
@@ -622,6 +673,8 @@ struct ContentView: View {
                             isEditingFivePlayerBoxes = true
                         } else if previousView == "SixPlayer" {
                             isEditingSixPlayerBoxes = true
+                        } else if previousView == "SevenPlayer" {
+                            isEditingSevenPlayerBoxes = true
                         } else if previousView == "EightPlayer" {
                             isEditingEightPlayerBoxes = true
                         }
