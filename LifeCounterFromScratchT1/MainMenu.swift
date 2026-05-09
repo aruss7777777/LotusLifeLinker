@@ -48,6 +48,7 @@ struct MainMenu: View {
     var savedGames: [SavedGame] = []
     var onLoadGame: ((SavedGame) -> Void)? = nil
     var onDeleteGame: ((UUID) -> Void)? = nil
+    var onChooseFirst: (() -> Void)? = nil
 
     @State private var wheelRotation: Double = 0
     @State private var dragStartAngle: Double?
@@ -93,6 +94,28 @@ struct MainMenu: View {
                     .frame(height: 170)
 
                     Spacer(minLength: 0)
+
+                    Button {
+                        onChooseFirst?()
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "hand.point.up.fill")
+                                .font(.system(size: 16, weight: .semibold))
+
+                            Text("Choose First")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 24)
+                        .background(Color.white.opacity(0.15))
+                        .clipShape(RoundedRectangle(cornerRadius: 14))
+                        .overlay {
+                            RoundedRectangle(cornerRadius: 14)
+                                .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                        }
+                    }
+                    .padding(.bottom, savedGames.isEmpty ? 30 : 8)
 
                     if !savedGames.isEmpty {
                         Button {

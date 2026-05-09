@@ -7,6 +7,7 @@ struct InGameMenu: View {
     var canEditPlayerBoxes: Bool = false
     var onStartEditingPlayerBoxes: (() -> Void)? = nil
     var onSaveGame: ((String) -> Void)? = nil
+    var onChooseFirst: (() -> Void)? = nil
     @Binding var keepScreenAwake: Bool
     @State private var showingHomeConfirmation: Bool = false
     @State private var showingSettings: Bool = false
@@ -67,6 +68,12 @@ struct InGameMenu: View {
                 showingSaveGame = true
             } label: {
                 menuRow(title: "Save Game", systemImage: "square.and.arrow.down.fill")
+            }
+
+            Button {
+                onChooseFirst?()
+            } label: {
+                menuRow(title: "Choose First", systemImage: "hand.point.up.fill")
             }
 
             Button {

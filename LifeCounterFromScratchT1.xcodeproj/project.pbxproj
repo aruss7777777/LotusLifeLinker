@@ -26,6 +26,7 @@
 		65D8494A2FAFD46B00AFEEAA /* FivePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */; };
 		65D8494C2FAFD51C00AFEEAA /* ThreePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */; };
 		65D8494E2FAFD54900AFEEAA /* SevenPlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */; };
+		65D849502FAFEF1700AFEEAA /* PlayerChooser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D8494F2FAFEF1700AFEEAA /* PlayerChooser.swift */; };
 		65F9E8322B1E69060062DF50 /* InGameMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F9E8312B1E69060062DF50 /* InGameMenu.swift */; };
 /* End PBXBuildFile section */
 
@@ -69,6 +70,7 @@
 		65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FivePlayerSplit.swift; sourceTree = "<group>"; };
 		65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreePlayerSplit.swift; sourceTree = "<group>"; };
 		65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenPlayerSplit.swift; sourceTree = "<group>"; };
+		65D8494F2FAFEF1700AFEEAA /* PlayerChooser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerChooser.swift; sourceTree = "<group>"; };
 		65F9E8312B1E69060062DF50 /* InGameMenu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InGameMenu.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -137,6 +139,7 @@
 				65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */,
 				65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */,
 				65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */,
+				65D8494F2FAFEF1700AFEEAA /* PlayerChooser.swift */,
 			);
 			path = LifeCounterFromScratchT1;
 			sourceTree = "<group>";
@@ -310,6 +313,7 @@
 				651093282B1D834100213E0C /* OnePlayer.swift in Sources */,
 				65D8494E2FAFD54900AFEEAA /* SevenPlayerSplit.swift in Sources */,
 				65D849482FAFD17500AFEEAA /* SevenPlayer.swift in Sources */,
+				65D849502FAFEF1700AFEEAA /* PlayerChooser.swift in Sources */,
 				651092FE2B1D755000213E0C /* LifeCounterFromScratchT1App.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

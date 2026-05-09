@@ -534,6 +534,7 @@ struct ContentView: View {
     @State private var isEditingEightPlayerBoxes: Bool = false
     @State private var keepScreenAwake: Bool = true
     @State private var savedGames: [SavedGame] = []
+    @State private var showingPlayerChooser: Bool = false
     
     private var displayedView: String {
         activeView == "InGameMenu" ? previousView : activeView
@@ -553,6 +554,9 @@ struct ContentView: View {
                     onDeleteGame: { id in
                         GameSaveManager.delete(id)
                         savedGames = GameSaveManager.loadAll()
+                    },
+                    onChooseFirst: {
+                        showingPlayerChooser = true
                     }
                 )
             } else if displayedView == "OnePlayer" {
@@ -826,10 +830,22 @@ struct ContentView: View {
                     onSaveGame: { name in
                         saveCurrentGame(name: name)
                     },
+                    onChooseFirst: {
+                        activeView = previousView
+                        showingPlayerChooser = true
+                    },
                     keepScreenAwake: $keepScreenAwake
                 )
             }
+
+            if showingPlayerChooser {
+                PlayerChooserView(onDismiss: {
+                    showingPlayerChooser = false
+                })
+                .transition(.opacity)
+            }
         }
+        .animation(.easeInOut(duration: 0.3), value: showingPlayerChooser)
         .statusBarHidden(true)
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = keepScreenAwake
