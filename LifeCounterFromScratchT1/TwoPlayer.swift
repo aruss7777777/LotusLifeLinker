@@ -37,7 +37,12 @@ struct TwoPlayer: View {
                         .allowsHitTesting(false)
 
                     playerSelectionOverlay
-                    customizePanel
+                    PlayerCustomizationPanel(
+                        playerStyles: $playerStyles,
+                        playerNames: $playerNames,
+                        isEditingBoxes: $isEditingBoxes,
+                        selectedPlayerIndex: selectedPlayerIndex
+                    )
                 }
 
                 if !isEditingBoxes {
@@ -60,7 +65,7 @@ struct TwoPlayer: View {
 
     private func lifeControlArea(for playerIndex: Int, lifeChange: Int) -> some View {
         Rectangle()
-            .fill(playerStyles[playerIndex].backgroundColor)
+            .fill(Color.clear)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
             .gesture(
@@ -74,36 +79,45 @@ struct TwoPlayer: View {
             )
     }
 
+    private func backgroundRotation(for playerIndex: Int) -> Angle {
+        playerIndex == 0 ? .degrees(180) : .degrees(0)
+    }
+
     private func playerInfoCell(for playerIndex: Int, rotation: Angle) -> some View {
         playerInfoView(
             name: playerNames[playerIndex],
             life: playerLives[playerIndex],
             color: playerStyles[playerIndex].fontColor,
+            isOutlined: playerStyles[playerIndex].isTextOutlined,
             rotation: rotation
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(PlayerBackgroundView(style: playerStyles[playerIndex], imageRotation: rotation))
+        .allowsHitTesting(false)
     }
 
-    private func playerInfoView(name: String, life: Int, color: Color, rotation: Angle) -> some View {
+    private func playerInfoView(name: String, life: Int, color: Color, isOutlined: Bool, rotation: Angle) -> some View {
         VStack(spacing: 8) {
-            Text("\(life)")
-                .font(.system(size: 110, weight: .regular, design: .rounded))
-                .lineLimit(1)
-                .minimumScaleFactor(0.45)
-                .monospacedDigit()
-                .frame(maxWidth: .infinity)
-                .fixedSize(horizontal: false, vertical: true)
+            OutlinedPlayerText(
+                text: "\(life)",
+                font: .system(size: 110, weight: .regular, design: .rounded),
+                color: color,
+                isOutlined: isOutlined,
+                minimumScaleFactor: 0.45,
+                usesMonospacedDigits: true
+            )
 
-            Text(name)
-                .font(.system(size: 26, weight: .semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .frame(maxWidth: .infinity)
+            OutlinedPlayerText(
+                text: name,
+                font: .system(size: 26, weight: .semibold),
+                color: color,
+                isOutlined: isOutlined,
+                minimumScaleFactor: 0.6
+            )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(14)
         .allowsHitTesting(false)
-        .foregroundStyle(color)
         .rotationEffect(rotation)
     }
 

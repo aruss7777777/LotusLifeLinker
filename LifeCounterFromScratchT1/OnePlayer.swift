@@ -46,7 +46,7 @@ struct OnePlayer: View {
 
     private func lifeControlArea(for playerIndex: Int, lifeChange: Int) -> some View {
         Rectangle()
-            .fill(playerStyles[playerIndex].backgroundColor)
+            .fill(Color.clear)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
             .gesture(
@@ -65,31 +65,36 @@ struct OnePlayer: View {
             name: playerNames[playerIndex],
             life: playerLives[playerIndex],
             color: playerStyles[playerIndex].fontColor,
+            isOutlined: playerStyles[playerIndex].isTextOutlined,
             rotation: rotation
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(PlayerBackgroundView(style: playerStyles[playerIndex], imageRotation: rotation))
+        .allowsHitTesting(false)
     }
 
-    private func playerInfoView(name: String, life: Int, color: Color, rotation: Angle) -> some View {
+    private func playerInfoView(name: String, life: Int, color: Color, isOutlined: Bool, rotation: Angle) -> some View {
         VStack(spacing: 8) {
-            Text("\(life)")
-                .font(.system(size: 120, weight: .regular, design: .rounded))
-                .lineLimit(1)
-                .minimumScaleFactor(0.45)
-                .monospacedDigit()
-                .frame(maxWidth: .infinity)
-                .fixedSize(horizontal: false, vertical: true)
+            OutlinedPlayerText(
+                text: "\(life)",
+                font: .system(size: 120, weight: .regular, design: .rounded),
+                color: color,
+                isOutlined: isOutlined,
+                minimumScaleFactor: 0.45,
+                usesMonospacedDigits: true
+            )
 
-            Text(name)
-                .font(.system(size: 28, weight: .semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.6)
-                .frame(maxWidth: .infinity)
+            OutlinedPlayerText(
+                text: name,
+                font: .system(size: 28, weight: .semibold),
+                color: color,
+                isOutlined: isOutlined,
+                minimumScaleFactor: 0.6
+            )
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(16)
         .allowsHitTesting(false)
-        .foregroundStyle(color)
         .rotationEffect(rotation)
     }
 
@@ -99,55 +104,12 @@ struct OnePlayer: View {
                 .ignoresSafeArea()
                 .allowsHitTesting(false)
 
-            VStack(spacing: 8) {
-                Text("Edit Player \(selectedPlayerIndex + 1)")
-                    .font(.headline)
-
-                Text("Tap a player box to select it")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-
-                TextField(
-                    "Player Name",
-                    text: Binding(
-                        get: { playerNames[selectedPlayerIndex] },
-                        set: { playerNames[selectedPlayerIndex] = $0 }
-                    )
-                )
-                .textFieldStyle(.roundedBorder)
-
-                colorPickerRow(
-                    title: "Font Color",
-                    selection: Binding(
-                        get: { playerStyles[selectedPlayerIndex].fontColor },
-                        set: { playerStyles[selectedPlayerIndex].fontColor = $0 }
-                    )
-                )
-
-                colorPickerRow(
-                    title: "Background Color",
-                    selection: Binding(
-                        get: { playerStyles[selectedPlayerIndex].backgroundColor },
-                        set: { playerStyles[selectedPlayerIndex].backgroundColor = $0 }
-                    )
-                )
-
-                Button {
-                    isEditingBoxes = false
-                } label: {
-                    Text("Done")
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 10)
-                        .contentShape(Rectangle())
-                }
-                .background(Color.black)
-                .foregroundStyle(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-            }
-            .padding(20)
-            .frame(maxWidth: 300)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
+            PlayerCustomizationPanel(
+                playerStyles: $playerStyles,
+                playerNames: $playerNames,
+                isEditingBoxes: $isEditingBoxes,
+                selectedPlayerIndex: selectedPlayerIndex
+            )
         }
     }
 
