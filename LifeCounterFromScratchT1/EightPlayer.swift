@@ -1,275 +1,344 @@
 import SwiftUI
 
 struct EightPlayer: View {
-    @State private var life1: Int = 40
-    @State private var color1: Color = .blue
-    
-    @State private var life2: Int = 40
-    @State private var color2: Color = .green
-    
-    @State private var life3: Int = 40
-    @State private var color3: Color = .yellow
-    
-    @State private var life4: Int = 40
-    @State private var color4: Color = .orange
-    
-    @State private var life5: Int = 40
-    @State private var color5: Color = .pink
-    
-    @State private var life6: Int = 40
-    @State private var color6: Color = .purple
-    
-    @State private var life7: Int = 40
-    @State private var color7: Color = .white
-    
-    @State private var life8: Int = 40
-    @State private var color8: Color = .gray
-    
-    var onInGameMenu: () -> Void  // Closure to handle back navigation
+    private struct PressedControl: Equatable {
+        let playerIndex: Int
+        let lifeChange: Int
+    }
+
+    @Binding var playerLives: [Int]
+    @Binding var playerStyles: [PlayerBoxStyle]
+    @Binding var playerNames: [String]
+    @Binding var isEditingBoxes: Bool
+    @State private var selectedPlayerIndex: Int = 0
+    @State private var pressedControl: PressedControl?
+    @State private var repeatTimer: Timer?
+    @State private var holdStartDate: Date?
+    var onInGameMenu: () -> Void
 
     var body: some View {
-        GeometryReader { geometry in
+        GeometryReader { _ in
             ZStack {
-                VStack(spacing: 0){
+                VStack(spacing: 0) {
+                    playerRow(leftPlayer: 0, rightPlayer: 1)
+                    playerRow(leftPlayer: 2, rightPlayer: 3)
+                    playerRow(leftPlayer: 4, rightPlayer: 5)
+                    playerRow(leftPlayer: 6, rightPlayer: 7)
+                }
+
+                VStack(spacing: 0) {
                     HStack(spacing: 0) {
-                        //Button 1 and 2 life 1
-                        Button(action: {life1 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color1)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life1 += 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color1)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        //Button 3 and 4 life 2
-                        Button(action: {life2 += 1}) {Text("")
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(color2)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life2 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color2)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                    }//End HStack
-                    HStack(spacing: 0){
-                        //Button 5 and 6 life 3
-                        Button(action: {life3 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color3)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life3 += 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color3)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        //Button 7 and 8 life 4
-                        Button(action: {life4 += 1}) {Text("")
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(color4)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life4 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color4)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                    }//End HStack
-                    
-                    HStack(spacing: 0){
-                        //Button 9 and 10 life 5
-                        Button(action: {life5 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color5)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life5 += 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color5)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        //Button 11 and 12 life 6
-                        Button(action: {life6 += 1}) {Text("")
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(color6)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life6 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color6)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                    }//End HStack
-                    
-                    HStack(spacing: 0){
-                        //Button 13 and 14 life 7
-                        Button(action: {life7 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color7)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life7 += 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color7)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        //Button 15 and 16 life 8
-                        Button(action: {life8 += 1}) {Text("")
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .background(color8)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                        Button(action: {life8 -= 1}) {Text("")
-                                .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                            .background(color8)}
-                        .frame(maxWidth: geometry.size.width / 4, maxHeight: geometry.size.height / 3)
-                    }//End HStack
-                    
-                    
-                    
-                }
-                
-                //Top Left
-                HStack{VStack {
-                        Text("\(life1)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(90))
+                        playerInfoCell(for: 0, rotation: .degrees(90))
+                        playerInfoCell(for: 1, rotation: .degrees(270))
                     }
-                .frame(width: geometry.size.width, alignment: .leading)
-                // Adjust the y offset to position the view in the top third
-                .offset(x: geometry.size.width / 7, y: geometry.size.height / 3 - geometry.size.height / 1.35)
-                }
-                
-                //Top Right
-                HStack{VStack {
-                        Text("\(life2)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(270))
+
+                    HStack(spacing: 0) {
+                        playerInfoCell(for: 2, rotation: .degrees(90))
+                        playerInfoCell(for: 3, rotation: .degrees(270))
                     }
-                // Adjust the y offset to position the view in the top third
-                .offset(x: geometry.size.width / 4, y: geometry.size.height / 3 - geometry.size.height / 1.35)
-                }
-                
-                
-                
-                
-                //Top Middle Left
-                HStack{VStack {
-                        Text("\(life3)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(90))
+
+                    HStack(spacing: 0) {
+                        playerInfoCell(for: 4, rotation: .degrees(90))
+                        playerInfoCell(for: 5, rotation: .degrees(270))
                     }
-                .frame(width: geometry.size.width, alignment: .leading)
-                .offset(x: geometry.size.width / 7, y: geometry.size.height / 3 - geometry.size.height / 2.17)
-                }
-                
-                //Middle Top Right
-                HStack{VStack {
-                        Text("\(life4)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(270))
+
+                    HStack(spacing: 0) {
+                        playerInfoCell(for: 6, rotation: .degrees(90))
+                        playerInfoCell(for: 7, rotation: .degrees(270))
                     }
-                .offset(x: geometry.size.width / 4, y: geometry.size.height / 3 - geometry.size.height / 2.17)
-                }
-                
-                
-                
-                //Bottom Middle Right
-                HStack{VStack {
-                        Text("\(life6)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(270))
-                }.offset(x: geometry.size.width / 4, y: geometry.size.height / 8)
-                }
-                
-                //Bottom Middle Left
-                HStack{VStack {
-                        Text("\(life5)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(90))
-                }
-                .frame(width: geometry.size.width, alignment: .leading)
-                .offset(x: geometry.size.width / 7    , y: geometry.size.height / 8)
                 }
 
-                //Bottom Right
-                HStack{VStack {
-                        Text("\(life8)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(270))
-                }.offset(x: geometry.size.width / 4, y: geometry.size.height / 2.60)
-                }
-                
-                //Bottom Left
-                HStack{VStack {
-                        Text("\(life7)")
-                            .allowsHitTesting(false)
-                            .font(.system(size: 75))
-                            .rotationEffect(.degrees(90))
-                }
-                .frame(width: geometry.size.width, alignment: .leading)
-                .offset(x: geometry.size.width / 7    , y: geometry.size.height / 2.60)
-                }
-                
-                
-                
-                
-//Color Changers
-            VStack(spacing: 0){
-                Spacer()
-                Spacer()
-                    HStack{
-                        Spacer()
-                            .frame(width: 150)
-                        ColorPicker("", selection: $color1)
-                        ColorPicker("", selection: $color2)
-                        Spacer()
-                            .frame(width: 160)
-                    }
-                    HStack{
-                        Spacer()
-                            .frame(width: 150)
-                        ColorPicker("", selection: $color3)
-                        ColorPicker("", selection: $color4)
-                        Spacer()
-                            .frame(width: 160)
-                    }
-                Spacer()
-                Spacer()
-                Spacer()
-                Spacer()
-                    HStack{
-                        Spacer()
-                            .frame(width: 150)
-                        ColorPicker("", selection: $color5)
-                        ColorPicker("", selection: $color6)
-                        Spacer()
-                            .frame(width: 160)
-                    }
-                HStack{
-                    Spacer()
-                        .frame(width: 150)
-                    ColorPicker("", selection: $color7)
-                    ColorPicker("", selection: $color8)
-                    Spacer()
-                        .frame(width: 160)
-                }
-                Spacer()
-                Spacer()
+                if isEditingBoxes {
+                    Color.black.opacity(0.2)
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
 
+                    playerSelectionOverlay
+                    customizePanel
                 }
-                
-                HStack {
-                    Button("+") {
-                        onInGameMenu() // Show InGameMenu when "+" is tapped
-                    }
-                    .frame(maxWidth: 30, maxHeight: 30)
-                    .background(Color.black)
+
+                if !isEditingBoxes {
+                    lotusMenuButton
                 }
             }
+            .ignoresSafeArea()
         }
+        .onDisappear {
+            stopRepeatingChange()
+        }
+    }
+
+    private func playerRow(leftPlayer: Int, rightPlayer: Int) -> some View {
+        HStack(spacing: 0) {
+            horizontalPlayerControl(for: leftPlayer, leftChange: -1, rightChange: 1)
+            horizontalPlayerControl(for: rightPlayer, leftChange: 1, rightChange: -1)
+        }
+    }
+
+    private func horizontalPlayerControl(for playerIndex: Int, leftChange: Int, rightChange: Int) -> some View {
+        HStack(spacing: 0) {
+            lifeControlArea(for: playerIndex, lifeChange: leftChange)
+            lifeControlArea(for: playerIndex, lifeChange: rightChange)
+        }
+    }
+
+    private func lifeControlArea(for playerIndex: Int, lifeChange: Int) -> some View {
+        Rectangle()
+            .fill(playerStyles[playerIndex].backgroundColor)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        beginInteraction(for: playerIndex, lifeChange: lifeChange)
+                    }
+                    .onEnded { _ in
+                        stopRepeatingChange()
+                    }
+            )
+    }
+
+    private func playerInfoCell(for playerIndex: Int, rotation: Angle) -> some View {
+        playerInfoView(
+            name: playerNames[playerIndex],
+            life: playerLives[playerIndex],
+            color: playerStyles[playerIndex].fontColor,
+            rotation: rotation
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func playerInfoView(name: String, life: Int, color: Color, rotation: Angle) -> some View {
+        VStack(spacing: 6) {
+            Text("\(life)")
+                .font(.system(size: 66, weight: .regular, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.45)
+                .monospacedDigit()
+                .frame(maxWidth: .infinity)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(name)
+                .font(.system(size: 20, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(10)
+        .allowsHitTesting(false)
+        .foregroundStyle(color)
+        .rotationEffect(rotation)
+    }
+
+    private var customizePanel: some View {
+        VStack(spacing: 8) {
+            Text("Edit Player \(selectedPlayerIndex + 1)")
+                .font(.headline)
+
+            Text("Tap a player box to select it")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+
+            TextField(
+                "Player Name",
+                text: Binding(
+                    get: { playerNames[selectedPlayerIndex] },
+                    set: { playerNames[selectedPlayerIndex] = $0 }
+                )
+            )
+            .textFieldStyle(.roundedBorder)
+
+            colorPickerRow(
+                title: "Font Color",
+                selection: Binding(
+                    get: { playerStyles[selectedPlayerIndex].fontColor },
+                    set: { playerStyles[selectedPlayerIndex].fontColor = $0 }
+                )
+            )
+
+            colorPickerRow(
+                title: "Background Color",
+                selection: Binding(
+                    get: { playerStyles[selectedPlayerIndex].backgroundColor },
+                    set: { playerStyles[selectedPlayerIndex].backgroundColor = $0 }
+                )
+            )
+
+            Button {
+                isEditingBoxes = false
+            } label: {
+                Text("Done")
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 10)
+                    .contentShape(Rectangle())
+            }
+            .background(Color.black)
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .padding(20)
+        .frame(maxWidth: 300)
+        .background(.ultraThinMaterial)
+        .clipShape(RoundedRectangle(cornerRadius: 20))
+    }
+
+    private func colorPickerRow(title: String, selection: Binding<Color>) -> some View {
+        ColorPicker(selection: selection, supportsOpacity: false) {
+            Text(title)
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Color.white.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func beginInteraction(for playerIndex: Int, lifeChange: Int) {
+        let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
+
+        if pressedControl == control {
+            return
+        }
+
+        pressedControl = control
+        holdStartDate = Date()
+        handleTap(for: playerIndex, lifeChange: lifeChange)
+
+        guard !isEditingBoxes else {
+            return
+        }
+
+        repeatTimer?.invalidate()
+        repeatTimer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
+            let multiplier = holdIncrementMultiplier()
+            handleTap(for: playerIndex, lifeChange: lifeChange * multiplier)
+        }
+    }
+
+    private func handleTap(for playerIndex: Int, lifeChange: Int) {
+        if isEditingBoxes {
+            stopRepeatingChange()
+            selectedPlayerIndex = playerIndex
+            return
+        }
+
+        guard playerLives.indices.contains(playerIndex) else {
+            return
+        }
+
+        playerLives[playerIndex] += lifeChange
+    }
+
+    private func stopRepeatingChange() {
+        repeatTimer?.invalidate()
+        repeatTimer = nil
+        pressedControl = nil
+        holdStartDate = nil
+    }
+
+    private func holdIncrementMultiplier() -> Int {
+        guard let holdStartDate else {
+            return 1
+        }
+
+        let holdDuration = Date().timeIntervalSince(holdStartDate)
+
+        if holdDuration >= 15 {
+            return 100
+        }
+
+        if holdDuration >= 5 {
+            return 10
+        }
+
+        return 1
+    }
+
+    private var playerSelectionOverlay: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                selectionCell(for: 0)
+                selectionCell(for: 1)
+            }
+
+            HStack(spacing: 0) {
+                selectionCell(for: 2)
+                selectionCell(for: 3)
+            }
+
+            HStack(spacing: 0) {
+                selectionCell(for: 4)
+                selectionCell(for: 5)
+            }
+
+            HStack(spacing: 0) {
+                selectionCell(for: 6)
+                selectionCell(for: 7)
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+    }
+
+    private func selectionCell(for playerIndex: Int) -> some View {
+        Rectangle()
+            .fill(Color.clear)
+            .overlay {
+                if selectedPlayerIndex == playerIndex {
+                    RoundedRectangle(cornerRadius: 26)
+                        .stroke(Color.white, lineWidth: 6)
+                        .padding(12)
+                }
+            }
+    }
+
+    private var lotusMenuButton: some View {
+        Button {
+            onInGameMenu()
+        } label: {
+            Image("LotusSymbol")
+                .resizable()
+                .scaledToFill()
+                .frame(width: 52, height: 52)
+                .clipShape(Circle())
+                .overlay {
+                    Circle()
+                        .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                }
+        }
+        .shadow(radius: 4)
     }
 }
 
 struct EightPlayer_Previews: PreviewProvider {
     static var previews: some View {
-        EightPlayer {
+        EightPlayer(
+            playerLives: .constant([40, 40, 40, 40, 40, 40, 40, 40]),
+            playerStyles: .constant([
+                PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
+                PlayerBoxStyle(backgroundColor: .green, fontColor: .white),
+                PlayerBoxStyle(backgroundColor: .yellow, fontColor: .black),
+                PlayerBoxStyle(backgroundColor: .orange, fontColor: .black),
+                PlayerBoxStyle(backgroundColor: .pink, fontColor: .black),
+                PlayerBoxStyle(backgroundColor: .purple, fontColor: .white),
+                PlayerBoxStyle(backgroundColor: .white, fontColor: .black),
+                PlayerBoxStyle(backgroundColor: .gray, fontColor: .white)
+            ]),
+            playerNames: .constant([
+                "Player 1",
+                "Player 2",
+                "Player 3",
+                "Player 4",
+                "Player 5",
+                "Player 6",
+                "Player 7",
+                "Player 8"
+            ]),
+            isEditingBoxes: .constant(false)
+        ) {
             // Example preview behavior for onInGameMenu
         }
     }

@@ -1,253 +1,335 @@
 import SwiftUI
 
 struct FivePlayer: View {
-    
-    
-    @State private var life1: Int = 40
-    @State private var color1: Color = .blue
-    
-    @State private var life2: Int = 40
-    @State private var color2: Color = .green
-    
-    @State private var life3: Int = 40
-    @State private var color3: Color = .yellow
-    
-    @State private var life4: Int = 40
-    @State private var color4: Color = .orange
-    
-    @State private var life5: Int = 40
-    @State private var color5: Color = .pink
-    
-    var onInGameMenu: () -> Void  // Closure to handle back navigation
-    
-    var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                GeometryReader { geometry in
-                    VStack(spacing: 0){
-                        //Life1 and Life2 HSTACK
-                        HStack(spacing: 0) {
-                            Button(action: {
-                                life1 -= 1
-                            }) {
-                                VStack {
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(color1)
-                                
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            Button(action: {
-                                life1 += 1
-                            }) {
-                                Text("")
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .background(color1)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            Button(action: {
-                                life2 += 1
-                            }) {
-                                VStack {
-                                    
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(color2)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            Button(action: {
-                                life2 -= 1
-                            }) {
-                                Text("")
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .background(color2)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            
-                        }
-                        //Life3 and Life4 HSTACK
-                        HStack(spacing: 0){
-                            
-                            Button(action: {
-                                life3 -= 1
-                            }) {
-                                VStack {
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(color3)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            Button(action: {
-                                life3 += 1
-                            }) {
-                                Text("")
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .background(color3)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            Button(action: {
-                                life4 += 1
-                            }) {
-                                VStack {
-                                }
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .background(color4)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                            Button(action: {
-                                life4 -= 1
-                            }) {
-                                Text("")
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .background(color4)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            
-                        }
-                        
-                        
-                        
-                        
-                        Button(action: {
-                            life5 += 1
-                        }) {
-                            VStack {
-                                
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: geometry.size.height / 6)
-                            .background(color5)
-                        }
-                        .frame(maxWidth: .infinity, maxHeight: geometry.size.height / 6)
-                        
-                        Button(action: {
-                            life5 -= 1}) {Text("")
-                                    .frame(maxWidth: .infinity, maxHeight: geometry.size.height / 6)
-                                    .background(color5)
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: geometry.size.height / 6)
-                    }
-                    
-                    
-                    VStack { //Top Left and Right Life Total Text
-                        Spacer()
-                            .frame(height: geometry.size.height / 12) // 1/4 of the screen's height
-                        HStack{
-                            Spacer()
-                            Text("\(life1)")
-                                .frame(width: geometry.size.width / 4, height: 150)
-                                .allowsHitTesting(false)
-                                .font(.system(size: geometry.size.width * 0.125))
-                                .rotationEffect(.degrees(90))
-                            
-                            Spacer()
-                            Spacer()
-                            Text("\(life2)")
-                                .frame(width: geometry.size.width / 4, height: 100)
-                                .allowsHitTesting(false)
-                                .font(.system(size: geometry.size.width * 0.125))
-                                .rotationEffect(.degrees(270))
-                            Spacer()
-                            
-                        }
-                        
-                    }
-                    
-                    VStack {
-                        Spacer()
-                        HStack {
-                            Spacer()
-                            Text("\(life3)")
-                                .frame(width: geometry.size.width / 4, height: 100)
-                                .allowsHitTesting(false)
-                                .font(.system(size: geometry.size.width * 0.125))
-                                .rotationEffect(.degrees(90))
-                            Spacer()
-                            Spacer()
-                            Text("\(life4)")
-                                .frame(width: geometry.size.width / 4, height: 100)
-                                .allowsHitTesting(false)
-                                .font(.system(size: geometry.size.width * 0.125))
-                                .rotationEffect(.degrees(270))
-                            Spacer()
-                        }
-                        Spacer()
-                        
-                    }
-                    
-                    VStack{
-                        Spacer()
-                            .frame(height: geometry.size.height / 1.3) // 1/4 of the screen's height
-                        Text("\(life5)")
-                            .frame(width: geometry.size.width / 1, height: 100)
-                            .allowsHitTesting(false)
-                            .font(.system(size: geometry.size.width * 0.275))
-                    }
-                }
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button("+") {
-                        onInGameMenu() // Show InGameMenu when "+" is tapped
-                    }
-                    .frame(maxWidth: 30, maxHeight: 30)
-                    .background(Color.black)
-                    Spacer()
-                }
-            }
-            
-            
-                HStack{
-                    Spacer()
-                        .frame(width: geometry.size.width / 2.25) // 1/4 of the screen's height
-                        .frame(height: geometry.size.height / 1.6) // 1/4 of the screen's height
-                    ColorPicker("", selection: $color1)
-                    ColorPicker("", selection: $color2)
-                    Spacer()
-                        .frame(width: geometry.size.width / 1) // 1/4 of the screen's height
-                }
-                HStack{
-                    Spacer()
-                        .frame(width: geometry.size.width / 2.25) // 1/4 of the screen's height
-                        .frame(height: geometry.size.height / 1.4) // 1/4 of the screen's height
-                    ColorPicker("", selection: $color3)
-                    ColorPicker("", selection: $color4)
-                    Spacer()
-                        .frame(width: geometry.size.width / 1) // 1/4 of the screen's height
-
-                }
-            HStack{
-                Spacer()
-                    .frame(height: geometry.size.height / 0.725) // 1/4 of the screen's height
-                ColorPicker("", selection: $color5)
-                Spacer()
-                    .frame(width: geometry.size.width / 2.075)
-
-            }
-            
-
-            
-            
-            
-        }
-        
-        
-        
-        
+    private struct PressedControl: Equatable {
+        let playerIndex: Int
+        let lifeChange: Int
     }
-    
-    
-    
+
+    @Binding var playerLives: [Int]
+    @Binding var playerStyles: [PlayerBoxStyle]
+    @Binding var playerNames: [String]
+    @Binding var isEditingBoxes: Bool
+    @State private var selectedPlayerIndex: Int = 0
+    @State private var pressedControl: PressedControl?
+    @State private var repeatTimer: Timer?
+    @State private var holdStartDate: Date?
+    var onInGameMenu: () -> Void
+
+    var body: some View {
+        GeometryReader { _ in
+            ZStack {
+                VStack(spacing: 0) {
+                    HStack(spacing: 0) {
+                        horizontalPlayerControl(for: 0, leftChange: -1, rightChange: 1)
+                        horizontalPlayerControl(for: 1, leftChange: 1, rightChange: -1)
+                    }
+
+                    HStack(spacing: 0) {
+                        horizontalPlayerControl(for: 2, leftChange: -1, rightChange: 1)
+                        horizontalPlayerControl(for: 3, leftChange: 1, rightChange: -1)
+                    }
+
+                    verticalPlayerControl(for: 4, topChange: 1, bottomChange: -1)
+                }
+
+                VStack(spacing: 0) {
+                    HStack(spacing: 0) {
+                        playerInfoCell(for: 0, rotation: .degrees(90))
+                        playerInfoCell(for: 1, rotation: .degrees(270))
+                    }
+
+                    HStack(spacing: 0) {
+                        playerInfoCell(for: 2, rotation: .degrees(90))
+                        playerInfoCell(for: 3, rotation: .degrees(270))
+                    }
+
+                    playerInfoCell(for: 4, rotation: .degrees(0))
+                }
+
+                if isEditingBoxes {
+                    Color.black.opacity(0.2)
+                        .ignoresSafeArea()
+                        .allowsHitTesting(false)
+
+                    playerSelectionOverlay
+
+                    VStack(spacing: 8) {
+                        Text("Edit Player \(selectedPlayerIndex + 1)")
+                            .font(.headline)
+
+                        Text("Tap a player box to select it")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+
+                        TextField(
+                            "Player Name",
+                            text: Binding(
+                                get: { playerNames[selectedPlayerIndex] },
+                                set: { playerNames[selectedPlayerIndex] = $0 }
+                            )
+                        )
+                        .textFieldStyle(.roundedBorder)
+
+                        colorPickerRow(
+                            title: "Font Color",
+                            selection: Binding(
+                                get: { playerStyles[selectedPlayerIndex].fontColor },
+                                set: { playerStyles[selectedPlayerIndex].fontColor = $0 }
+                            )
+                        )
+
+                        colorPickerRow(
+                            title: "Background Color",
+                            selection: Binding(
+                                get: { playerStyles[selectedPlayerIndex].backgroundColor },
+                                set: { playerStyles[selectedPlayerIndex].backgroundColor = $0 }
+                            )
+                        )
+
+                        Button {
+                            isEditingBoxes = false
+                        } label: {
+                            Text("Done")
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .contentShape(Rectangle())
+                        }
+                        .background(Color.black)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .padding(20)
+                    .frame(maxWidth: 300)
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                }
+
+                if !isEditingBoxes {
+                    Button {
+                        onInGameMenu()
+                    } label: {
+                        Image("LotusSymbol")
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 52, height: 52)
+                            .clipShape(Circle())
+                            .overlay {
+                                Circle()
+                                    .stroke(Color.black.opacity(0.2), lineWidth: 1)
+                            }
+                    }
+                    .shadow(radius: 4)
+                }
+            }
+            .ignoresSafeArea()
+        }
+        .onDisappear {
+            stopRepeatingChange()
+        }
+    }
+
+    private func horizontalPlayerControl(
+        for playerIndex: Int,
+        leftChange: Int,
+        rightChange: Int
+    ) -> some View {
+        HStack(spacing: 0) {
+            lifeControlArea(for: playerIndex, lifeChange: leftChange)
+            lifeControlArea(for: playerIndex, lifeChange: rightChange)
+        }
+    }
+
+    private func verticalPlayerControl(
+        for playerIndex: Int,
+        topChange: Int,
+        bottomChange: Int
+    ) -> some View {
+        VStack(spacing: 0) {
+            lifeControlArea(for: playerIndex, lifeChange: topChange)
+            lifeControlArea(for: playerIndex, lifeChange: bottomChange)
+        }
+    }
+
+    private func lifeControlArea(for playerIndex: Int, lifeChange: Int) -> some View {
+        Rectangle()
+            .fill(playerStyles[playerIndex].backgroundColor)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .contentShape(Rectangle())
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { _ in
+                        beginInteraction(for: playerIndex, lifeChange: lifeChange)
+                    }
+                    .onEnded { _ in
+                        stopRepeatingChange()
+                    }
+            )
+    }
+
+    private func playerInfoCell(for playerIndex: Int, rotation: Angle) -> some View {
+        playerInfoView(
+            name: playerNames[playerIndex],
+            life: playerLives[playerIndex],
+            color: playerStyles[playerIndex].fontColor,
+            rotation: rotation
+        )
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+
+    private func playerInfoView(
+        name: String,
+        life: Int,
+        color: Color,
+        rotation: Angle
+    ) -> some View {
+        VStack(spacing: 8) {
+            Text("\(life)")
+                .font(.system(size: 75, weight: .regular, design: .rounded))
+                .lineLimit(1)
+                .minimumScaleFactor(0.45)
+                .monospacedDigit()
+                .frame(maxWidth: .infinity)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(name)
+                .font(.system(size: 24, weight: .semibold))
+                .lineLimit(1)
+                .minimumScaleFactor(0.6)
+                .frame(maxWidth: .infinity)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .padding(12)
+        .allowsHitTesting(false)
+        .foregroundStyle(color)
+        .rotationEffect(rotation)
+    }
+
+    private func colorPickerRow(title: String, selection: Binding<Color>) -> some View {
+        ColorPicker(selection: selection, supportsOpacity: false) {
+            Text(title)
+                .foregroundStyle(.primary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 7)
+                .background(Color.white.opacity(0.12))
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+        }
+        .frame(maxWidth: .infinity)
+    }
+
+    private func beginInteraction(for playerIndex: Int, lifeChange: Int) {
+        let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
+
+        if pressedControl == control {
+            return
+        }
+
+        pressedControl = control
+        holdStartDate = Date()
+        handleTap(for: playerIndex, lifeChange: lifeChange)
+
+        guard !isEditingBoxes else {
+            return
+        }
+
+        repeatTimer?.invalidate()
+        repeatTimer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
+            let multiplier = holdIncrementMultiplier()
+            handleTap(for: playerIndex, lifeChange: lifeChange * multiplier)
+        }
+    }
+
+    private func handleTap(for playerIndex: Int, lifeChange: Int) {
+        if isEditingBoxes {
+            stopRepeatingChange()
+            selectedPlayerIndex = playerIndex
+            return
+        }
+
+        guard playerLives.indices.contains(playerIndex) else {
+            return
+        }
+
+        playerLives[playerIndex] += lifeChange
+    }
+
+    private func stopRepeatingChange() {
+        repeatTimer?.invalidate()
+        repeatTimer = nil
+        pressedControl = nil
+        holdStartDate = nil
+    }
+
+    private func holdIncrementMultiplier() -> Int {
+        guard let holdStartDate else {
+            return 1
+        }
+
+        let holdDuration = Date().timeIntervalSince(holdStartDate)
+
+        if holdDuration >= 15 {
+            return 100
+        }
+
+        if holdDuration >= 5 {
+            return 10
+        }
+
+        return 1
+    }
+
+    private var playerSelectionOverlay: some View {
+        VStack(spacing: 0) {
+            HStack(spacing: 0) {
+                selectionCell(for: 0)
+                selectionCell(for: 1)
+            }
+
+            HStack(spacing: 0) {
+                selectionCell(for: 2)
+                selectionCell(for: 3)
+            }
+
+            selectionCell(for: 4)
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+    }
+
+    private func selectionCell(for playerIndex: Int) -> some View {
+        Rectangle()
+            .fill(Color.clear)
+            .overlay {
+                if selectedPlayerIndex == playerIndex {
+                    RoundedRectangle(cornerRadius: 26)
+                        .stroke(Color.white, lineWidth: 6)
+                        .padding(12)
+                }
+            }
+    }
 }
 
 struct FivePlayer_Previews: PreviewProvider {
     static var previews: some View {
-        FivePlayer {
+        FivePlayer(
+            playerLives: .constant([40, 40, 40, 40, 40]),
+            playerStyles: .constant([
+                PlayerBoxStyle(backgroundColor: .blue, fontColor: .white),
+                PlayerBoxStyle(backgroundColor: .green, fontColor: .white),
+                PlayerBoxStyle(backgroundColor: .yellow, fontColor: .black),
+                PlayerBoxStyle(backgroundColor: .orange, fontColor: .black),
+                PlayerBoxStyle(backgroundColor: .pink, fontColor: .black)
+            ]),
+            playerNames: .constant([
+                "Player 1",
+                "Player 2",
+                "Player 3",
+                "Player 4",
+                "Player 5"
+            ]),
+            isEditingBoxes: .constant(false)
+        ) {
             // Example preview behavior for onInGameMenu
         }
     }
