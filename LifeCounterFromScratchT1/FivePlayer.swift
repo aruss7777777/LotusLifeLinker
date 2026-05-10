@@ -66,6 +66,7 @@ struct FivePlayer: View {
 
                 if !isEditingBoxes {
                     Button {
+                        stopRepeatingChange()
                         onInGameMenu()
                     } label: {
                         Image("LotusSymbol")

@@ -211,6 +211,7 @@ struct OnePlayer: View {
             Spacer()
 
             Button {
+                stopRepeatingChange()
                 onInGameMenu()
             } label: {
                 Image("LotusSymbol")

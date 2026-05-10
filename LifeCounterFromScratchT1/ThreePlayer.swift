@@ -320,6 +320,7 @@ struct ThreePlayer: View {
 
     private var lotusMenuButton: some View {
         Button {
+            stopRepeatingChange()
             onInGameMenu()
         } label: {
             Image("LotusSymbol")

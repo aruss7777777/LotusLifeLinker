@@ -19,7 +19,7 @@ struct InGameMenu: View {
         ZStack {
             Color.black.opacity(0.25)
                 .ignoresSafeArea()
-                .allowsHitTesting(false)
+                .contentShape(Rectangle())
 
             VStack(spacing: 10) {
                 if showingSaveGame {
@@ -73,7 +73,7 @@ struct InGameMenu: View {
             Button {
                 onChooseFirst?()
             } label: {
-                menuRow(title: "Choose First", systemImage: "hand.point.up.fill")
+                menuRow(title: "Chooser", systemImage: "hand.point.up.fill")
             }
 
             Button {

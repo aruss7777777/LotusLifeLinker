@@ -102,7 +102,7 @@ struct MainMenu: View {
                             Image(systemName: "hand.point.up.fill")
                                 .font(.system(size: 16, weight: .semibold))
 
-                            Text("Choose First")
+                            Text("Chooser")
                                 .font(.system(size: 18, weight: .bold, design: .rounded))
                         }
                         .foregroundStyle(.white)

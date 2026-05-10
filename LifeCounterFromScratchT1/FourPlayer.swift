@@ -74,6 +74,7 @@ struct FourPlayer: View {
                 
                 if !isEditingBoxes {
                     Button {
+                        stopRepeatingChange()
                         onInGameMenu() // Show InGameMenu when "+" is tapped
                     } label: {
                         Image("LotusSymbol")
