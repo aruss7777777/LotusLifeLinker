@@ -47,9 +47,27 @@ struct InGameMenu: View {
 
     private var menuContent: some View {
         Group {
-            Text("Menu")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .foregroundStyle(.black)
+            HStack {
+                Button {
+                    showingHomeConfirmation = true
+                } label: {
+                    iconButton(systemImage: "house.fill")
+                }
+
+                Spacer()
+
+                Text("Menu")
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .foregroundStyle(.black)
+
+                Spacer()
+
+                Button {
+                    showingSettings = true
+                } label: {
+                    iconButton(systemImage: "gearshape.fill")
+                }
+            }
 
             if canEditPlayerBoxes {
                 Button {
@@ -64,28 +82,16 @@ struct InGameMenu: View {
             }
 
             Button {
-                saveName = ""
-                showingSaveGame = true
-            } label: {
-                menuRow(title: "Save Game", systemImage: "square.and.arrow.down.fill")
-            }
-
-            Button {
                 onChooseFirst?()
             } label: {
                 menuRow(title: "Chooser", systemImage: "hand.point.up.fill")
             }
 
             Button {
-                showingSettings = true
+                saveName = ""
+                showingSaveGame = true
             } label: {
-                menuRow(title: "Settings", systemImage: "gearshape.fill")
-            }
-
-            Button {
-                showingHomeConfirmation = true
-            } label: {
-                menuRow(title: "Home", systemImage: "house.fill")
+                menuRow(title: "Save Game", systemImage: "square.and.arrow.down.fill")
             }
 
             Button {
@@ -166,6 +172,16 @@ struct InGameMenu: View {
                 menuRow(title: "Back", systemImage: "arrow.backward")
             }
         }
+    }
+
+    private func iconButton(systemImage: String) -> some View {
+        Image(systemName: systemImage)
+            .font(.system(size: 18, weight: .bold))
+            .foregroundStyle(.black)
+            .frame(width: 42, height: 42)
+            .background(Color.white.opacity(0.14))
+            .clipShape(Circle())
+            .contentShape(Circle())
     }
 
     private func menuRow(title: String, systemImage: String? = nil) -> some View {

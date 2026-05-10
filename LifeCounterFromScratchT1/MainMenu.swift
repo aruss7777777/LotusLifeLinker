@@ -49,6 +49,7 @@ struct MainMenu: View {
     var onLoadGame: ((SavedGame) -> Void)? = nil
     var onDeleteGame: ((UUID) -> Void)? = nil
     var onChooseFirst: (() -> Void)? = nil
+    @Binding var keepScreenAwake: Bool
 
     @State private var wheelRotation: Double = 0
     @State private var dragStartAngle: Double?
@@ -57,6 +58,7 @@ struct MainMenu: View {
     @State private var selectedFivePlayerLayout: String = "FivePlayer"
     @State private var selectedSevenPlayerLayout: String = "SevenPlayer"
     @State private var showingSavedGames: Bool = false
+    @State private var showingSettings: Bool = false
 
     private let playerCounts = Array(1...8)
     private let segmentDegrees: Double = 45
@@ -144,10 +146,93 @@ struct MainMenu: View {
                 .padding(.top, 30)
                 .padding(.horizontal, 18)
 
+                VStack {
+                    HStack {
+                        Spacer()
+
+                        Button {
+                            showingSettings = true
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                                .font(.system(size: 18, weight: .bold))
+                                .foregroundStyle(.white)
+                                .frame(width: 44, height: 44)
+                                .background(Color.white.opacity(0.15))
+                                .clipShape(Circle())
+                                .overlay {
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                                }
+                        }
+                    }
+                    .padding(.top, 14)
+                    .padding(.horizontal, 18)
+
+                    Spacer()
+                }
+
                 if showingSavedGames {
                     savedGamesOverlay
                 }
+
+                if showingSettings {
+                    settingsOverlay
+                }
             }
+        }
+    }
+
+    private var settingsOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.5)
+                .ignoresSafeArea()
+                .onTapGesture {
+                    showingSettings = false
+                }
+
+            VStack(spacing: 12) {
+                HStack {
+                    Text("Settings")
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+
+                    Spacer()
+
+                    Button {
+                        showingSettings = false
+                    } label: {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 26))
+                            .foregroundStyle(.white.opacity(0.7))
+                    }
+                }
+
+                Button {
+                    keepScreenAwake.toggle()
+                } label: {
+                    HStack(spacing: 10) {
+                        Image(systemName: keepScreenAwake ? "checkmark.square.fill" : "square")
+                            .font(.system(size: 20, weight: .semibold))
+
+                        Text("Keep Screen Awake")
+                            .font(.system(size: 18, weight: .semibold))
+
+                        Spacer()
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 12)
+                    .background(Color.white.opacity(0.12))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .contentShape(Rectangle())
+                }
+            }
+            .padding(20)
+            .frame(maxWidth: 340)
+            .background(Color(red: 0.1, green: 0.14, blue: 0.3))
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: .black.opacity(0.4), radius: 20)
         }
     }
 
@@ -589,5 +674,8 @@ struct MainMenu: View {
 }
 
 #Preview {
-    MainMenu { _ in }
+    MainMenu(
+        onMenuSelection: { _ in },
+        keepScreenAwake: .constant(true)
+    )
 }

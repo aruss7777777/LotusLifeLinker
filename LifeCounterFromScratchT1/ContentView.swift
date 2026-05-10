@@ -557,7 +557,8 @@ struct ContentView: View {
                     },
                     onChooseFirst: {
                         showingPlayerChooser = true
-                    }
+                    },
+                    keepScreenAwake: $keepScreenAwake
                 )
             } else if displayedView == "OnePlayer" {
                 OnePlayer(
