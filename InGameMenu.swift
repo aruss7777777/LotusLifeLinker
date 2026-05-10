@@ -10,6 +10,7 @@ struct InGameMenu: View {
     var onChooseFirst: (() -> Void)? = nil
     @Binding var keepScreenAwake: Bool
     @State private var showingHomeConfirmation: Bool = false
+    @State private var showingResetConfirmation: Bool = false
     @State private var showingSettings: Bool = false
     @State private var showingSaveGame: Bool = false
     @State private var saveName: String = ""
@@ -41,6 +42,14 @@ struct InGameMenu: View {
             }
             Button("Yes", role: .destructive) {
                 onNavigateToMainMenu()
+            }
+        }
+        .alert("Are you sure this will reset scores?", isPresented: $showingResetConfirmation) {
+            Button("No", role: .cancel) {
+            }
+            Button("Yes", role: .destructive) {
+                onResetGame()
+                onBackToMenu()
             }
         }
     }
@@ -88,6 +97,12 @@ struct InGameMenu: View {
             }
 
             Button {
+                showingResetConfirmation = true
+            } label: {
+                menuRow(title: "Reset Score", systemImage: "arrow.counterclockwise")
+            }
+
+            Button {
                 saveName = ""
                 showingSaveGame = true
             } label: {
@@ -108,25 +123,8 @@ struct InGameMenu: View {
                 .font(.system(size: 34, weight: .bold, design: .rounded))
                 .foregroundStyle(.black)
 
-            Button {
+            settingsToggleRow(title: "Keep Screen Awake", isOn: keepScreenAwake) {
                 keepScreenAwake.toggle()
-            } label: {
-                HStack(spacing: 10) {
-                    Image(systemName: keepScreenAwake ? "checkmark.square.fill" : "square")
-                        .font(.system(size: 20, weight: .semibold))
-
-                    Text("Keep Screen Awake")
-                        .font(.system(size: 18, weight: .semibold))
-
-                    Spacer()
-                }
-                .foregroundStyle(.black)
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 12)
-                .padding(.horizontal, 12)
-                .background(Color.white.opacity(0.14))
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .contentShape(Rectangle())
             }
 
             Button {
@@ -171,6 +169,27 @@ struct InGameMenu: View {
             } label: {
                 menuRow(title: "Back", systemImage: "arrow.backward")
             }
+        }
+    }
+
+    private func settingsToggleRow(title: String, isOn: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: isOn ? "checkmark.square.fill" : "square")
+                    .font(.system(size: 20, weight: .semibold))
+
+                Text(title)
+                    .font(.system(size: 18, weight: .semibold))
+
+                Spacer()
+            }
+            .foregroundStyle(.black)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 12)
+            .background(Color.white.opacity(0.14))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .contentShape(Rectangle())
         }
     }
 

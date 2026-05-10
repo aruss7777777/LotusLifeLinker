@@ -804,8 +804,7 @@ struct ContentView: View {
                         activeView = "MainMenu" // Navigate to the Main Menu
 		                    },
                     onResetGame: {
-                        // Reset action. Since TwoPlayer manages its own state,
-                        // this closure will be passed from TwoPlayer.
+                        resetCurrentScores()
                     },
                     canEditPlayerBoxes: previousView != "MainMenu",
                     onStartEditingPlayerBoxes: {
@@ -857,6 +856,29 @@ struct ContentView: View {
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
+        }
+    }
+
+    private func resetCurrentScores() {
+        switch previousView {
+        case "OnePlayer":
+            onePlayerLives = [40]
+        case "TwoPlayer":
+            twoPlayerLives = [40, 40]
+        case "ThreePlayer", "ThreePlayerSplit":
+            threePlayerLives = [40, 40, 40]
+        case "FourPlayer":
+            fourPlayerLives = [40, 40, 40, 40]
+        case "FivePlayer", "FivePlayerSplit":
+            fivePlayerLives = [40, 40, 40, 40, 40]
+        case "SixPlayer":
+            sixPlayerLives = [40, 40, 40, 40, 40, 40]
+        case "SevenPlayer", "SevenPlayerSplit":
+            sevenPlayerLives = [40, 40, 40, 40, 40, 40, 40]
+        case "EightPlayer":
+            eightPlayerLives = [40, 40, 40, 40, 40, 40, 40, 40]
+        default:
+            break
         }
     }
 

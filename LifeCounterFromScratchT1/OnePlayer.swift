@@ -49,14 +49,19 @@ struct OnePlayer: View {
             .fill(Color.clear)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        beginInteraction(for: playerIndex, lifeChange: lifeChange)
+            .onLongPressGesture(
+                minimumDuration: 0.35,
+                maximumDistance: .infinity,
+                pressing: { isPressing in
+                    if isPressing {
+                        beginPress(for: playerIndex, lifeChange: lifeChange)
+                    } else {
+                        finishPress(for: playerIndex, lifeChange: lifeChange)
                     }
-                    .onEnded { _ in
-                        stopRepeatingChange()
-                    }
+                },
+                perform: {
+                    startRepeatingChange(for: playerIndex, lifeChange: lifeChange)
+                }
             )
     }
 
@@ -126,23 +131,49 @@ struct OnePlayer: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func beginInteraction(for playerIndex: Int, lifeChange: Int) {
+    private func beginPress(for playerIndex: Int, lifeChange: Int) {
         let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
 
-        if pressedControl == control {
-            return
-        }
-
-        pressedControl = control
-        holdStartDate = Date()
-        handleTap(for: playerIndex, lifeChange: lifeChange)
-
-        guard !isEditingBoxes else {
+        guard pressedControl != control else {
             return
         }
 
         repeatTimer?.invalidate()
+        repeatTimer = nil
+        pressedControl = control
+        holdStartDate = Date()
+    }
+
+    private func finishPress(for playerIndex: Int, lifeChange: Int) {
+        let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
+        let shouldApplySingleTap = pressedControl == control && repeatTimer == nil
+
+        if shouldApplySingleTap {
+            handleTap(for: playerIndex, lifeChange: lifeChange)
+        }
+
+        stopRepeatingChange()
+    }
+
+    private func startRepeatingChange(for playerIndex: Int, lifeChange: Int) {
+        guard !isEditingBoxes else {
+            return
+        }
+
+        let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
+        guard pressedControl == control else {
+            return
+        }
+
+        repeatTimer?.invalidate()
+        handleTap(for: playerIndex, lifeChange: lifeChange)
+
         repeatTimer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
+            guard pressedControl == control else {
+                stopRepeatingChange()
+                return
+            }
+
             let multiplier = holdIncrementMultiplier()
             handleTap(for: playerIndex, lifeChange: lifeChange * multiplier)
         }

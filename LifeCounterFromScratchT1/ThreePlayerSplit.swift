@@ -21,11 +21,11 @@ struct ThreePlayerSplit: View {
             ZStack {
                 HStack(spacing: 0) {
                     VStack(spacing: 0) {
-                        verticalPlayerControl(for: 0, topChange: 1, bottomChange: -1)
-                        verticalPlayerControl(for: 2, topChange: 1, bottomChange: -1)
+                        rotatedPlayerControl(for: 0, rotation: .degrees(90))
+                        rotatedPlayerControl(for: 2, rotation: .degrees(90))
                     }
 
-                    verticalPlayerControl(for: 1, topChange: 1, bottomChange: -1)
+                    rotatedPlayerControl(for: 1, rotation: .degrees(270))
                 }
 
                 HStack(spacing: 0) {
@@ -71,19 +71,42 @@ struct ThreePlayerSplit: View {
         }
     }
 
+    private func horizontalPlayerControl(for playerIndex: Int, leftChange: Int, rightChange: Int) -> some View {
+        HStack(spacing: 0) {
+            lifeControlArea(for: playerIndex, lifeChange: leftChange)
+            lifeControlArea(for: playerIndex, lifeChange: rightChange)
+        }
+    }
+
+    @ViewBuilder
+    private func rotatedPlayerControl(for playerIndex: Int, rotation: Angle) -> some View {
+        if abs(rotation.degrees - 90) < 0.1 {
+            horizontalPlayerControl(for: playerIndex, leftChange: -1, rightChange: 1)
+        } else if abs(rotation.degrees - 270) < 0.1 {
+            horizontalPlayerControl(for: playerIndex, leftChange: 1, rightChange: -1)
+        } else {
+            verticalPlayerControl(for: playerIndex, topChange: 1, bottomChange: -1)
+        }
+    }
+
     private func lifeControlArea(for playerIndex: Int, lifeChange: Int) -> some View {
         Rectangle()
             .fill(Color.clear)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        beginInteraction(for: playerIndex, lifeChange: lifeChange)
+            .onLongPressGesture(
+                minimumDuration: 0.35,
+                maximumDistance: .infinity,
+                pressing: { isPressing in
+                    if isPressing {
+                        beginPress(for: playerIndex, lifeChange: lifeChange)
+                    } else {
+                        finishPress(for: playerIndex, lifeChange: lifeChange)
                     }
-                    .onEnded { _ in
-                        stopRepeatingChange()
-                    }
+                },
+                perform: {
+                    startRepeatingChange(for: playerIndex, lifeChange: lifeChange)
+                }
             )
     }
 
@@ -125,23 +148,49 @@ struct ThreePlayerSplit: View {
         .rotationEffect(rotation)
     }
 
-    private func beginInteraction(for playerIndex: Int, lifeChange: Int) {
+    private func beginPress(for playerIndex: Int, lifeChange: Int) {
         let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
 
-        if pressedControl == control {
-            return
-        }
-
-        pressedControl = control
-        holdStartDate = Date()
-        handleTap(for: playerIndex, lifeChange: lifeChange)
-
-        guard !isEditingBoxes else {
+        guard pressedControl != control else {
             return
         }
 
         repeatTimer?.invalidate()
+        repeatTimer = nil
+        pressedControl = control
+        holdStartDate = Date()
+    }
+
+    private func finishPress(for playerIndex: Int, lifeChange: Int) {
+        let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
+        let shouldApplySingleTap = pressedControl == control && repeatTimer == nil
+
+        if shouldApplySingleTap {
+            handleTap(for: playerIndex, lifeChange: lifeChange)
+        }
+
+        stopRepeatingChange()
+    }
+
+    private func startRepeatingChange(for playerIndex: Int, lifeChange: Int) {
+        guard !isEditingBoxes else {
+            return
+        }
+
+        let control = PressedControl(playerIndex: playerIndex, lifeChange: lifeChange)
+        guard pressedControl == control else {
+            return
+        }
+
+        repeatTimer?.invalidate()
+        handleTap(for: playerIndex, lifeChange: lifeChange)
+
         repeatTimer = Timer.scheduledTimer(withTimeInterval: 0.12, repeats: true) { _ in
+            guard pressedControl == control else {
+                stopRepeatingChange()
+                return
+            }
+
             let multiplier = holdIncrementMultiplier()
             handleTap(for: playerIndex, lifeChange: lifeChange * multiplier)
         }

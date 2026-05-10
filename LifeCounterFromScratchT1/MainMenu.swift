@@ -207,25 +207,8 @@ struct MainMenu: View {
                     }
                 }
 
-                Button {
+                settingsToggleRow(title: "Keep Screen Awake", isOn: keepScreenAwake) {
                     keepScreenAwake.toggle()
-                } label: {
-                    HStack(spacing: 10) {
-                        Image(systemName: keepScreenAwake ? "checkmark.square.fill" : "square")
-                            .font(.system(size: 20, weight: .semibold))
-
-                        Text("Keep Screen Awake")
-                            .font(.system(size: 18, weight: .semibold))
-
-                        Spacer()
-                    }
-                    .foregroundStyle(.white)
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 12)
-                    .padding(.horizontal, 12)
-                    .background(Color.white.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-                    .contentShape(Rectangle())
                 }
             }
             .padding(20)
@@ -233,6 +216,27 @@ struct MainMenu: View {
             .background(Color(red: 0.1, green: 0.14, blue: 0.3))
             .clipShape(RoundedRectangle(cornerRadius: 20))
             .shadow(color: .black.opacity(0.4), radius: 20)
+        }
+    }
+
+    private func settingsToggleRow(title: String, isOn: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: isOn ? "checkmark.square.fill" : "square")
+                    .font(.system(size: 20, weight: .semibold))
+
+                Text(title)
+                    .font(.system(size: 18, weight: .semibold))
+
+                Spacer()
+            }
+            .foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 12)
+            .padding(.horizontal, 12)
+            .background(Color.white.opacity(0.12))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .contentShape(Rectangle())
         }
     }
 
