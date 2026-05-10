@@ -8,11 +8,17 @@ struct InGameMenu: View {
     var onStartEditingPlayerBoxes: (() -> Void)? = nil
     var onSaveGame: ((String) -> Void)? = nil
     var onChooseFirst: (() -> Void)? = nil
+    var playerNames: [String] = []
+    @Binding var commanderDamage: [[Int]]
+    @Binding var poisonDamage: [Int]
+    @Binding var showSpecialDamageDeaths: Bool
     @Binding var keepScreenAwake: Bool
     @State private var showingHomeConfirmation: Bool = false
     @State private var showingResetConfirmation: Bool = false
     @State private var showingSettings: Bool = false
     @State private var showingSaveGame: Bool = false
+    @State private var showingCommanderDamage: Bool = false
+    @State private var selectedCommanderDamageTarget: Int = 0
     @State private var saveName: String = ""
     @State private var showingSaveConfirmation: Bool = false
 
@@ -25,6 +31,8 @@ struct InGameMenu: View {
             VStack(spacing: 10) {
                 if showingSaveGame {
                     saveGameContent
+                } else if showingCommanderDamage {
+                    commanderDamageContent
                 } else if showingSettings {
                     settingsContent
                 } else {
@@ -32,7 +40,7 @@ struct InGameMenu: View {
                 }
             }
             .padding(20)
-            .frame(maxWidth: 280)
+            .frame(maxWidth: showingCommanderDamage ? 340 : 280)
             .background(.ultraThinMaterial)
             .clipShape(RoundedRectangle(cornerRadius: 22))
             .shadow(radius: 18)
@@ -97,6 +105,13 @@ struct InGameMenu: View {
             }
 
             Button {
+                selectedCommanderDamageTarget = min(selectedCommanderDamageTarget, max(playerNames.count - 1, 0))
+                showingCommanderDamage = true
+            } label: {
+                menuRow(title: "Special Damage", systemImage: "flame.fill")
+            }
+
+            Button {
                 showingResetConfirmation = true
             } label: {
                 menuRow(title: "Reset Score", systemImage: "arrow.counterclockwise")
@@ -117,6 +132,145 @@ struct InGameMenu: View {
         }
     }
 
+    private var commanderDamageContent: some View {
+        Group {
+            Text("Special Damage")
+                .font(.system(size: 28, weight: .bold, design: .rounded))
+                .foregroundStyle(.black)
+                .lineLimit(1)
+                .minimumScaleFactor(0.7)
+
+            targetPicker
+
+            ScrollView {
+                VStack(spacing: 8) {
+                    ForEach(currentPlayerNames.indices, id: \.self) { sourceIndex in
+                        if sourceIndex != selectedCommanderDamageTarget {
+                            commanderDamageRow(from: sourceIndex, to: selectedCommanderDamageTarget)
+                        }
+                    }
+
+                    poisonDamageRow(to: selectedCommanderDamageTarget)
+                }
+                .padding(.vertical, 2)
+            }
+            .frame(maxHeight: 260)
+
+            Button {
+                resetCommanderDamageForCurrentGame()
+            } label: {
+                menuRow(title: "Clear Damage", systemImage: "xmark.circle")
+            }
+
+            Button {
+                showingCommanderDamage = false
+            } label: {
+                menuRow(title: "Back", systemImage: "arrow.backward")
+            }
+        }
+        .onAppear {
+            normalizeCommanderDamage()
+        }
+    }
+
+    private var targetPicker: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            Text("Damage to")
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.black.opacity(0.7))
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 6) {
+                    ForEach(currentPlayerNames.indices, id: \.self) { index in
+                        Button {
+                            selectedCommanderDamageTarget = index
+                        } label: {
+                            Text(currentPlayerNames[index])
+                                .font(.system(size: 15, weight: .semibold))
+                                .lineLimit(1)
+                                .padding(.vertical, 8)
+                                .padding(.horizontal, 10)
+                                .foregroundStyle(selectedCommanderDamageTarget == index ? .white : .black)
+                                .background(selectedCommanderDamageTarget == index ? Color.black : Color.white.opacity(0.14))
+                                .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                }
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+
+    private func commanderDamageRow(from sourceIndex: Int, to targetIndex: Int) -> some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(currentPlayerNames[sourceIndex])
+                    .font(.system(size: 16, weight: .semibold))
+                    .lineLimit(1)
+
+                Text("dealt to \(currentPlayerNames[targetIndex])")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.black.opacity(0.6))
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 4)
+
+            damageAdjustButton(systemImage: "minus") {
+                adjustCommanderDamage(from: sourceIndex, to: targetIndex, by: -1)
+            }
+
+            Text("\(commanderDamageValue(from: sourceIndex, to: targetIndex))")
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .frame(width: 38)
+
+            damageAdjustButton(systemImage: "plus") {
+                adjustCommanderDamage(from: sourceIndex, to: targetIndex, by: 1)
+            }
+        }
+        .foregroundStyle(.black)
+        .padding(.vertical, 9)
+        .padding(.horizontal, 10)
+        .background(Color.white.opacity(0.14))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
+    private func poisonDamageRow(to targetIndex: Int) -> some View {
+        HStack(spacing: 8) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Poison")
+                    .font(.system(size: 16, weight: .semibold))
+                    .lineLimit(1)
+
+                Text("on \(currentPlayerNames[targetIndex])")
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundStyle(.black.opacity(0.6))
+                    .lineLimit(1)
+            }
+
+            Spacer(minLength: 4)
+
+            damageAdjustButton(systemImage: "minus") {
+                adjustPoisonDamage(to: targetIndex, by: -1)
+            }
+
+            Text("\(poisonDamageValue(to: targetIndex))")
+                .font(.system(size: 22, weight: .bold, design: .rounded))
+                .monospacedDigit()
+                .frame(width: 38)
+
+            damageAdjustButton(systemImage: "plus") {
+                adjustPoisonDamage(to: targetIndex, by: 1)
+            }
+        }
+        .foregroundStyle(.black)
+        .padding(.vertical, 9)
+        .padding(.horizontal, 10)
+        .background(Color.white.opacity(0.14))
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+    }
+
     private var settingsContent: some View {
         Group {
             Text("Settings")
@@ -125,6 +279,10 @@ struct InGameMenu: View {
 
             settingsToggleRow(title: "Keep Screen Awake", isOn: keepScreenAwake) {
                 keepScreenAwake.toggle()
+            }
+
+            settingsToggleRow(title: "Show Special Damage Deaths", isOn: showSpecialDamageDeaths) {
+                showSpecialDamageDeaths.toggle()
             }
 
             Button {
@@ -203,6 +361,17 @@ struct InGameMenu: View {
             .contentShape(Circle())
     }
 
+    private func damageAdjustButton(systemImage: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            Image(systemName: systemImage)
+                .font(.system(size: 15, weight: .bold))
+                .foregroundStyle(.black)
+                .frame(width: 34, height: 34)
+                .background(Color.white.opacity(0.22))
+                .clipShape(Circle())
+        }
+    }
+
     private func menuRow(title: String, systemImage: String? = nil) -> some View {
         HStack(spacing: 10) {
             if let systemImage {
@@ -219,6 +388,91 @@ struct InGameMenu: View {
         .background(Color.white.opacity(0.14))
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
+
+    private var currentPlayerNames: [String] {
+        playerNames.isEmpty ? ["Player 1"] : playerNames
+    }
+
+    private func commanderDamageValue(from sourceIndex: Int, to targetIndex: Int) -> Int {
+        guard commanderDamage.indices.contains(sourceIndex),
+              commanderDamage[sourceIndex].indices.contains(targetIndex) else {
+            return 0
+        }
+
+        return commanderDamage[sourceIndex][targetIndex]
+    }
+
+    private func poisonDamageValue(to targetIndex: Int) -> Int {
+        guard poisonDamage.indices.contains(targetIndex) else {
+            return 0
+        }
+
+        return poisonDamage[targetIndex]
+    }
+
+    private func adjustCommanderDamage(from sourceIndex: Int, to targetIndex: Int, by amount: Int) {
+        normalizeCommanderDamage()
+
+        guard sourceIndex != targetIndex,
+              commanderDamage.indices.contains(sourceIndex),
+              commanderDamage[sourceIndex].indices.contains(targetIndex) else {
+            return
+        }
+
+        commanderDamage[sourceIndex][targetIndex] = max(0, commanderDamage[sourceIndex][targetIndex] + amount)
+    }
+
+    private func resetCommanderDamageForCurrentGame() {
+        let count = currentPlayerNames.count
+        commanderDamage = Array(repeating: Array(repeating: 0, count: count), count: count)
+        poisonDamage = Array(repeating: 0, count: count)
+    }
+
+    private func adjustPoisonDamage(to targetIndex: Int, by amount: Int) {
+        normalizePoisonDamage()
+
+        guard poisonDamage.indices.contains(targetIndex) else {
+            return
+        }
+
+        poisonDamage[targetIndex] = max(0, poisonDamage[targetIndex] + amount)
+    }
+
+    private func normalizeCommanderDamage() {
+        let count = currentPlayerNames.count
+        let normalized = (0..<count).map { source in
+            (0..<count).map { target in
+                guard source != target,
+                      commanderDamage.indices.contains(source),
+                      commanderDamage[source].indices.contains(target) else {
+                    return 0
+                }
+
+                return max(0, commanderDamage[source][target])
+            }
+        }
+
+        if normalized != commanderDamage {
+            commanderDamage = normalized
+        }
+
+        normalizePoisonDamage()
+    }
+
+    private func normalizePoisonDamage() {
+        let count = currentPlayerNames.count
+        let normalized = (0..<count).map { index in
+            guard poisonDamage.indices.contains(index) else {
+                return 0
+            }
+
+            return max(0, poisonDamage[index])
+        }
+
+        if normalized != poisonDamage {
+            poisonDamage = normalized
+        }
+    }
 }
 
 struct InGameMenu_Previews: PreviewProvider {
@@ -229,6 +483,10 @@ struct InGameMenu_Previews: PreviewProvider {
             onResetGame: { print("game reset") },
             canEditPlayerBoxes: true,
             onStartEditingPlayerBoxes: { print("edit player boxes") },
+            playerNames: ["Player 1", "Player 2", "Player 3", "Player 4"],
+            commanderDamage: .constant(Array(repeating: Array(repeating: 0, count: 4), count: 4)),
+            poisonDamage: .constant(Array(repeating: 0, count: 4)),
+            showSpecialDamageDeaths: .constant(true),
             keepScreenAwake: .constant(true)
         )
     }

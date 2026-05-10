@@ -76,6 +76,71 @@ struct SavedGame: Codable, Identifiable {
     let playerLives: [Int]
     let playerNames: [String]
     let playerStyles: [SavedPlayerStyle]
+    let commanderDamage: [[Int]]?
+    let poisonDamage: [Int]?
+}
+
+struct SpecialDamageDeathBackground: View {
+    let isDead: Bool
+    let rotation: Angle
+
+    var body: some View {
+        if isDead {
+            ZStack {
+                Color.black
+
+                GeometryReader { geometry in
+                    let size = min(geometry.size.width, geometry.size.height)
+                    let skullSize = max(size * 0.74, 96)
+
+                    ZStack {
+                        Capsule()
+                            .fill(Color.white.opacity(0.72))
+                            .frame(width: skullSize * 1.55, height: skullSize * 0.16)
+                            .rotationEffect(.degrees(34))
+
+                        Capsule()
+                            .fill(Color.white.opacity(0.72))
+                            .frame(width: skullSize * 1.55, height: skullSize * 0.16)
+                            .rotationEffect(.degrees(-34))
+
+                        VStack(spacing: -skullSize * 0.1) {
+                            Circle()
+                                .fill(Color.white.opacity(0.92))
+                                .frame(width: skullSize, height: skullSize)
+                                .overlay {
+                                    HStack(spacing: skullSize * 0.16) {
+                                        Circle()
+                                            .fill(Color.black)
+                                            .frame(width: skullSize * 0.2, height: skullSize * 0.24)
+
+                                        Circle()
+                                            .fill(Color.black)
+                                            .frame(width: skullSize * 0.2, height: skullSize * 0.24)
+                                    }
+                                    .offset(y: skullSize * 0.02)
+                                }
+
+                            RoundedRectangle(cornerRadius: skullSize * 0.12)
+                                .fill(Color.white.opacity(0.92))
+                                .frame(width: skullSize * 0.58, height: skullSize * 0.34)
+                                .overlay {
+                                    HStack(spacing: skullSize * 0.05) {
+                                        ForEach(0..<3, id: \.self) { _ in
+                                            Rectangle()
+                                                .fill(Color.black.opacity(0.85))
+                                                .frame(width: skullSize * 0.045)
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .rotationEffect(rotation)
+                }
+            }
+        }
+    }
 }
 
 struct GameSaveManager {
@@ -535,6 +600,9 @@ struct ContentView: View {
     @State private var keepScreenAwake: Bool = true
     @State private var savedGames: [SavedGame] = []
     @State private var showingPlayerChooser: Bool = false
+    @State private var commanderDamage: [[Int]] = Array(repeating: Array(repeating: 0, count: 8), count: 8)
+    @State private var poisonDamage: [Int] = Array(repeating: 0, count: 8)
+    @State private var showSpecialDamageDeaths: Bool = true
     
     private var displayedView: String {
         activeView == "InGameMenu" ? previousView : activeView
@@ -545,6 +613,7 @@ struct ContentView: View {
             if displayedView == "MainMenu" {
                 MainMenu(
                     onMenuSelection: { selectedView in
+                        resetSpecialDamage(for: playerCount(for: selectedView))
                         activeView = selectedView
                     },
                     savedGames: savedGames,
@@ -569,7 +638,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "OnePlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "TwoPlayer" {
                 TwoPlayer(
@@ -580,7 +650,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "TwoPlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "ThreePlayer" {
                 ThreePlayer(
@@ -591,7 +662,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "ThreePlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "ThreePlayerSplit" {
                 ThreePlayerSplit(
@@ -602,7 +674,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "ThreePlayerSplit"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "FourPlayer" {
                 FourPlayer(
@@ -613,7 +686,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "FourPlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "FivePlayer" {
                 FivePlayer(
@@ -624,7 +698,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "FivePlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "FivePlayerSplit" {
                 FivePlayerSplit(
@@ -635,7 +710,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "FivePlayerSplit"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "SixPlayer" {
                 SixPlayer(
@@ -646,7 +722,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "SixPlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "SevenPlayer" {
                 SevenPlayer(
@@ -657,7 +734,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "SevenPlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "SevenPlayerSplit" {
                 SevenPlayerSplit(
@@ -668,7 +746,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "SevenPlayerSplit"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             } else if displayedView == "EightPlayer" {
                 EightPlayer(
@@ -679,7 +758,8 @@ struct ContentView: View {
                     onInGameMenu: {
                         previousView = "EightPlayer"
                         activeView = "InGameMenu"
-                    }
+                    },
+                    specialDamageDeaths: specialDamageDeaths
                 )
             }
 
@@ -801,6 +881,7 @@ struct ContentView: View {
                                 "Player 8"
                             ]
                         }
+                        resetSpecialDamage(for: playerCount(for: previousView))
                         activeView = "MainMenu" // Navigate to the Main Menu
 		                    },
                     onResetGame: {
@@ -834,6 +915,10 @@ struct ContentView: View {
                         activeView = previousView
                         showingPlayerChooser = true
                     },
+                    playerNames: currentNames(),
+                    commanderDamage: $commanderDamage,
+                    poisonDamage: $poisonDamage,
+                    showSpecialDamageDeaths: $showSpecialDamageDeaths,
                     keepScreenAwake: $keepScreenAwake
                 )
             }
@@ -879,6 +964,91 @@ struct ContentView: View {
             eightPlayerLives = [40, 40, 40, 40, 40, 40, 40, 40]
         default:
             break
+        }
+    }
+
+    private func playerCount(for viewName: String) -> Int {
+        switch viewName {
+        case "OnePlayer": return 1
+        case "TwoPlayer": return 2
+        case "ThreePlayer", "ThreePlayerSplit": return 3
+        case "FourPlayer": return 4
+        case "FivePlayer", "FivePlayerSplit": return 5
+        case "SixPlayer": return 6
+        case "SevenPlayer", "SevenPlayerSplit": return 7
+        case "EightPlayer": return 8
+        default: return 0
+        }
+    }
+
+    private func resetSpecialDamage(for playerCount: Int) {
+        resetCommanderDamage(for: playerCount)
+        poisonDamage = Self.emptyPoisonDamage(playerCount: max(playerCount, 1))
+    }
+
+    private func resetCommanderDamage(for playerCount: Int) {
+        commanderDamage = Self.emptyCommanderDamage(playerCount: max(playerCount, 1))
+    }
+
+    private func currentCommanderDamage() -> [[Int]] {
+        Self.normalizedCommanderDamage(commanderDamage, playerCount: currentNames().count)
+    }
+
+    private func currentPoisonDamage() -> [Int] {
+        Self.normalizedPoisonDamage(poisonDamage, playerCount: currentNames().count)
+    }
+
+    private var specialDamageDeaths: [Bool] {
+        guard showSpecialDamageDeaths else {
+            return Array(repeating: false, count: currentNames().count)
+        }
+
+        let damage = currentCommanderDamage()
+        let poison = currentPoisonDamage()
+
+        return currentNames().indices.map { target in
+            let hasLethalCommanderDamage = damage.contains { row in
+                row.indices.contains(target) && row[target] >= 21
+            }
+            let hasLethalPoison = poison.indices.contains(target) && poison[target] >= 10
+
+            return hasLethalCommanderDamage || hasLethalPoison
+        }
+    }
+
+    private static func emptyCommanderDamage(playerCount: Int) -> [[Int]] {
+        Array(repeating: Array(repeating: 0, count: playerCount), count: playerCount)
+    }
+
+    private static func emptyPoisonDamage(playerCount: Int) -> [Int] {
+        Array(repeating: 0, count: playerCount)
+    }
+
+    private static func normalizedCommanderDamage(_ damage: [[Int]], playerCount: Int) -> [[Int]] {
+        let count = max(playerCount, 1)
+
+        return (0..<count).map { source in
+            (0..<count).map { target in
+                guard source != target,
+                      damage.indices.contains(source),
+                      damage[source].indices.contains(target) else {
+                    return 0
+                }
+
+                return max(0, damage[source][target])
+            }
+        }
+    }
+
+    private static func normalizedPoisonDamage(_ damage: [Int], playerCount: Int) -> [Int] {
+        let count = max(playerCount, 1)
+
+        return (0..<count).map { index in
+            guard damage.indices.contains(index) else {
+                return 0
+            }
+
+            return max(0, damage[index])
         }
     }
 
@@ -932,7 +1102,9 @@ struct ContentView: View {
             viewName: previousView,
             playerLives: currentLives(),
             playerNames: currentNames(),
-            playerStyles: currentStyles().map { SavedPlayerStyle(from: $0) }
+            playerStyles: currentStyles().map { SavedPlayerStyle(from: $0) },
+            commanderDamage: currentCommanderDamage(),
+            poisonDamage: currentPoisonDamage()
         )
         GameSaveManager.save(game)
         savedGames = GameSaveManager.loadAll()
@@ -941,6 +1113,14 @@ struct ContentView: View {
     private func loadGame(_ game: SavedGame) {
         let styles = game.playerStyles.map { $0.toPlayerBoxStyle }
         let viewName = game.viewName
+        commanderDamage = Self.normalizedCommanderDamage(
+            game.commanderDamage ?? [],
+            playerCount: game.playerLives.count
+        )
+        poisonDamage = Self.normalizedPoisonDamage(
+            game.poisonDamage ?? [],
+            playerCount: game.playerLives.count
+        )
 
         switch viewName {
         case "OnePlayer":

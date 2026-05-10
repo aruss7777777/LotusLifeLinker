@@ -15,6 +15,7 @@ struct OnePlayer: View {
     @State private var repeatTimer: Timer?
     @State private var holdStartDate: Date?
     var onInGameMenu: () -> Void
+    var specialDamageDeaths: [Bool] = []
 
     var body: some View {
         GeometryReader { _ in
@@ -66,15 +67,22 @@ struct OnePlayer: View {
     }
 
     private func playerInfoCell(for playerIndex: Int, rotation: Angle) -> some View {
-        playerInfoView(
+        let isDeadFromSpecialDamage = specialDamageDeaths.indices.contains(playerIndex) && specialDamageDeaths[playerIndex]
+
+        return playerInfoView(
             name: playerNames[playerIndex],
             life: playerLives[playerIndex],
             color: playerStyles[playerIndex].fontColor,
-            isOutlined: playerStyles[playerIndex].isTextOutlined,
+            isOutlined: playerStyles[playerIndex].isTextOutlined || isDeadFromSpecialDamage,
             rotation: rotation
         )
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(PlayerBackgroundView(style: playerStyles[playerIndex], imageRotation: rotation))
+        .background {
+            ZStack {
+                PlayerBackgroundView(style: playerStyles[playerIndex], imageRotation: rotation)
+                SpecialDamageDeathBackground(isDead: isDeadFromSpecialDamage, rotation: rotation)
+            }
+        }
         .allowsHitTesting(false)
     }
 

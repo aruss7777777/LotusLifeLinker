@@ -21,6 +21,7 @@
 		651BD3FA2B1EC53C00B77C42 /* FourPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651BD3F92B1EC53C00B77C42 /* FourPlayer.swift */; };
 		651BD3FC2B1ECCCC00B77C42 /* FivePlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651BD3FB2B1ECCCC00B77C42 /* FivePlayer.swift */; };
 		651BD3FE2B1ED40E00B77C42 /* SixPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651BD3FD2B1ED40E00B77C42 /* SixPlayer.swift */; };
+		6525AB002FB152FA00B1EB1E /* skull-crossbones-icon-halloween-logo-pirate-symbol-bone-ghost-head-cartoon-character-illustration-doodle-design-vector.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 6525AAFF2FB152FA00B1EB1E /* skull-crossbones-icon-halloween-logo-pirate-symbol-bone-ghost-head-cartoon-character-illustration-doodle-design-vector.jpg */; };
 		65D7671B2B1FC4B10061A443 /* EightPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D7671A2B1FC4B10061A443 /* EightPlayer.swift */; };
 		65D849482FAFD17500AFEEAA /* SevenPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849472FAFD17500AFEEAA /* SevenPlayer.swift */; };
 		65D8494A2FAFD46B00AFEEAA /* FivePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */; };
@@ -65,6 +66,7 @@
 		651BD3F92B1EC53C00B77C42 /* FourPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FourPlayer.swift; sourceTree = "<group>"; };
 		651BD3FB2B1ECCCC00B77C42 /* FivePlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FivePlayer.swift; sourceTree = "<group>"; };
 		651BD3FD2B1ED40E00B77C42 /* SixPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SixPlayer.swift; sourceTree = "<group>"; };
+		6525AAFF2FB152FA00B1EB1E /* skull-crossbones-icon-halloween-logo-pirate-symbol-bone-ghost-head-cartoon-character-illustration-doodle-design-vector.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "skull-crossbones-icon-halloween-logo-pirate-symbol-bone-ghost-head-cartoon-character-illustration-doodle-design-vector.jpg"; sourceTree = "<group>"; };
 		65D7671A2B1FC4B10061A443 /* EightPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EightPlayer.swift; sourceTree = "<group>"; };
 		65D849472FAFD17500AFEEAA /* SevenPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenPlayer.swift; sourceTree = "<group>"; };
 		65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FivePlayerSplit.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 				65D8494B2FAFD51C00AFEEAA /* ThreePlayerSplit.swift */,
 				65D8494D2FAFD54900AFEEAA /* SevenPlayerSplit.swift */,
 				65D8494F2FAFEF1700AFEEAA /* PlayerChooser.swift */,
+				6525AAFF2FB152FA00B1EB1E /* skull-crossbones-icon-halloween-logo-pirate-symbol-bone-ghost-head-cartoon-character-illustration-doodle-design-vector.jpg */,
 			);
 			path = LifeCounterFromScratchT1;
 			sourceTree = "<group>";
@@ -274,6 +277,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				651093052B1D755100213E0C /* Preview Assets.xcassets in Resources */,
+				6525AB002FB152FA00B1EB1E /* skull-crossbones-icon-halloween-logo-pirate-symbol-bone-ghost-head-cartoon-character-illustration-doodle-design-vector.jpg in Resources */,
 				651093022B1D755100213E0C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
