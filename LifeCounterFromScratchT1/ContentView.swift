@@ -89,54 +89,18 @@ struct SpecialDamageDeathBackground: View {
             ZStack {
                 Color.black
 
-                GeometryReader { geometry in
-                    let size = min(geometry.size.width, geometry.size.height)
-                    let skullSize = max(size * 0.74, 96)
-
-                    ZStack {
-                        Capsule()
-                            .fill(Color.white.opacity(0.72))
-                            .frame(width: skullSize * 1.55, height: skullSize * 0.16)
-                            .rotationEffect(.degrees(34))
-
-                        Capsule()
-                            .fill(Color.white.opacity(0.72))
-                            .frame(width: skullSize * 1.55, height: skullSize * 0.16)
-                            .rotationEffect(.degrees(-34))
-
-                        VStack(spacing: -skullSize * 0.1) {
-                            Circle()
-                                .fill(Color.white.opacity(0.92))
-                                .frame(width: skullSize, height: skullSize)
-                                .overlay {
-                                    HStack(spacing: skullSize * 0.16) {
-                                        Circle()
-                                            .fill(Color.black)
-                                            .frame(width: skullSize * 0.2, height: skullSize * 0.24)
-
-                                        Circle()
-                                            .fill(Color.black)
-                                            .frame(width: skullSize * 0.2, height: skullSize * 0.24)
-                                    }
-                                    .offset(y: skullSize * 0.02)
-                                }
-
-                            RoundedRectangle(cornerRadius: skullSize * 0.12)
-                                .fill(Color.white.opacity(0.92))
-                                .frame(width: skullSize * 0.58, height: skullSize * 0.34)
-                                .overlay {
-                                    HStack(spacing: skullSize * 0.05) {
-                                        ForEach(0..<3, id: \.self) { _ in
-                                            Rectangle()
-                                                .fill(Color.black.opacity(0.85))
-                                                .frame(width: skullSize * 0.045)
-                                        }
-                                    }
-                                }
-                        }
-                    }
-                    .frame(width: geometry.size.width, height: geometry.size.height)
-                    .rotationEffect(rotation)
+                // Use JPEG image from file system instead of generated skull
+                if let uiImage = UIImage(named: "skull-crossbones") {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFit()
+                        .scaleEffect(1.5)
+                        .rotationEffect(rotation)
+                } else {
+                    // Fallback text if image not found
+                    Text("☠️")
+                        .font(.system(size: 150))
+                        .rotationEffect(rotation)
                 }
             }
         }
