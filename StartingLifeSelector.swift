@@ -4,165 +4,148 @@ struct StartingLifeSelector: View {
     let playerCount: Int
     let onStartGame: (Int) -> Void
     let onCancel: () -> Void
-    
-    @State private var selectedLife: Int? = 40
+
     @State private var customLife: String = ""
     @State private var showingCustomInput: Bool = false
     @FocusState private var isInputFocused: Bool
-    
+
     private let presetOptions = [20, 30, 40]
-    
+
     var body: some View {
         ZStack {
             Color.black.opacity(0.6)
                 .ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                // Header
+
+            VStack(spacing: 24) {
                 VStack(spacing: 8) {
                     Text("Starting Life Total")
-                        .font(.title.bold())
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundStyle(Color.textPrimary)
-                    
+
                     Text("\(playerCount) Player\(playerCount > 1 ? "s" : "")")
-                        .font(.subheadline)
+                        .font(.system(size: 16, weight: .semibold, design: .rounded))
                         .foregroundStyle(Color.textSecondary)
                 }
-                .padding(.top, 20)
-                
-                // Preset Options
-                VStack(spacing: 12) {
-                    ForEach(presetOptions, id: \.self) { lifeTotal in
-                        Button {
-                            selectedLife = lifeTotal
-                            showingCustomInput = false
-                            customLife = ""
-                        } label: {
-                            HStack {
-                                Text("\(lifeTotal)")
-                                    .font(.title2.bold())
-                                    .foregroundStyle(.black)
-                                
-                                Spacer()
-                                
-                                if selectedLife == lifeTotal && !showingCustomInput {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .font(.title2)
-                                        .foregroundStyle(.blue)
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 16)
-                            .background(selectedLife == lifeTotal && !showingCustomInput ? Color.blue.opacity(0.1) : Color.white.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                VStack(spacing: 18) {
+                    HStack(spacing: 12) {
+                        ForEach(presetOptions, id: \.self) { lifeTotal in
+                            presetLifeButton(lifeTotal)
                         }
                     }
-                    
-                    // Custom Option
-                    Button {
-                        showingCustomInput = true
-                        selectedLife = nil
-                        isInputFocused = true
-                    } label: {
-                        HStack {
-                            if showingCustomInput {
-                                TextField("Enter life total", text: $customLife)
-                                    .keyboardType(.numberPad)
-                                    .font(.title2.bold())
-                                    .foregroundStyle(.black)
-                                    .focused($isInputFocused)
-                                    .frame(maxWidth: 150)
-                            } else {
-                                Text("Custom")
-                                    .font(.title2.bold())
-                                    .foregroundStyle(.black)
-                            }
-                            
-                            Spacer()
-                            
-                            if showingCustomInput && !customLife.isEmpty {
-                                Image(systemName: "checkmark.circle.fill")
-                                    .font(.title2)
-                                    .foregroundStyle(.blue)
-                            } else if !showingCustomInput {
-                                Image(systemName: "keyboard")
-                                    .font(.title3)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 16)
-                        .background(showingCustomInput ? Color.blue.opacity(0.1) : Color.white.opacity(0.08))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
+                    .frame(maxWidth: .infinity)
+
+                    customLifeSection
                 }
-                .padding(.horizontal, 20)
-                
-                Spacer()
-                
-                // Action Buttons
-                VStack(spacing: 12) {
-                    Button {
-                        startGame()
-                    } label: {
-                        Text("Start Game")
-                            .font(.headline)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 16)
-                            .background(canStartGame ? Color.blue : Color.gray.opacity(0.3))
-                            .foregroundStyle(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                .frame(maxWidth: .infinity)
+
+                VStack(spacing: 14) {
+                    if showingCustomInput {
+                        Button {
+                            startCustomGame()
+                        } label: {
+                            Text("Next")
+                                .font(.system(size: 18, weight: .bold, design: .rounded))
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 15)
+                                .background(canStartCustomGame ? Color.buttonPrimary : Color.gray.opacity(0.25))
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .disabled(!canStartCustomGame)
                     }
-                    .disabled(!canStartGame)
-                    
+
                     Button {
                         onCancel()
                     } label: {
                         Text("Cancel")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                            .font(.system(size: 15, weight: .semibold, design: .rounded))
+                            .foregroundStyle(Color.textSecondary)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
             }
-            .frame(width: 320)
-            .background(.ultraThinMaterial)
+            .padding(24)
+            .frame(width: 340)
+            .background(Color.white)
             .clipShape(RoundedRectangle(cornerRadius: 20))
-        }
-        .onAppear {
-            // Default to 40
-            selectedLife = 40
+            .shadow(color: .black.opacity(0.25), radius: 24, y: 12)
         }
     }
-    
-    private var canStartGame: Bool {
-        if showingCustomInput {
-            guard let life = Int(customLife), life > 0, life <= 999 else {
-                return false
-            }
-            return true
-        } else {
-            return selectedLife != nil
+
+    private func presetLifeButton(_ lifeTotal: Int) -> some View {
+        Button {
+            onStartGame(lifeTotal)
+        } label: {
+            Text("\(lifeTotal)")
+                .font(.system(size: 30, weight: .black, design: .rounded))
+                .foregroundStyle(Color.textPrimary)
+                .frame(width: 88, height: 88)
+                .background(
+                    LinearGradient(
+                        colors: [Color.white, Color.appSecondary.opacity(0.18)],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 14)
+                        .stroke(Color.appPrimary.opacity(0.35), lineWidth: 2)
+                }
+                .shadow(color: Color.appPrimary.opacity(0.12), radius: 8, y: 4)
         }
     }
-    
-    private func startGame() {
-        let lifeTotal: Int
-        
-        if showingCustomInput {
-            guard let life = Int(customLife), life > 0, life <= 999 else {
-                return
+
+    private var customLifeSection: some View {
+        Button {
+            showingCustomInput = true
+            isInputFocused = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "keyboard")
+                    .font(.system(size: 18, weight: .semibold))
+                    .foregroundStyle(Color.buttonPrimary)
+                    .frame(width: 28)
+
+                if showingCustomInput {
+                    TextField("Custom life", text: $customLife)
+                        .keyboardType(.numberPad)
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.textPrimary)
+                        .focused($isInputFocused)
+                } else {
+                    Text("Custom")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(Color.textPrimary)
+                }
+
+                Spacer()
             }
-            lifeTotal = life
-        } else {
-            guard let selected = selectedLife else {
-                return
+            .padding(.horizontal, 16)
+            .frame(height: 62)
+            .background(showingCustomInput ? Color.appSecondary.opacity(0.18) : Color.white)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
+            .overlay {
+                RoundedRectangle(cornerRadius: 14)
+                    .stroke(showingCustomInput ? Color.buttonPrimary.opacity(0.55) : Color.appPrimary.opacity(0.25), lineWidth: 2)
             }
-            lifeTotal = selected
         }
-        
-        onStartGame(lifeTotal)
+    }
+
+    private var canStartCustomGame: Bool {
+        guard let life = Int(customLife), life > 0, life <= 999 else {
+            return false
+        }
+
+        return true
+    }
+
+    private func startCustomGame() {
+        guard let life = Int(customLife), life > 0, life <= 999 else {
+            return
+        }
+
+        onStartGame(life)
     }
 }
 

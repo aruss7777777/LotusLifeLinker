@@ -32,6 +32,7 @@
 		656530812FB1651400960103 /* RECENT_UPDATES.md in Resources */ = {isa = PBXBuildFile; fileRef = 656530802FB1651400960103 /* RECENT_UPDATES.md */; };
 		656530832FB1662A00960103 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656530822FB1662A00960103 /* DesignSystem.swift */; };
 		656530852FB166DF00960103 /* DESIGN_UPDATE.md in Resources */ = {isa = PBXBuildFile; fileRef = 656530842FB166DF00960103 /* DESIGN_UPDATE.md */; };
+		656530872FB167B800960103 /* LOTUS_WHEEL.md in Resources */ = {isa = PBXBuildFile; fileRef = 656530862FB167B800960103 /* LOTUS_WHEEL.md */; };
 		65D7671B2B1FC4B10061A443 /* EightPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D7671A2B1FC4B10061A443 /* EightPlayer.swift */; };
 		65D849482FAFD17500AFEEAA /* SevenPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849472FAFD17500AFEEAA /* SevenPlayer.swift */; };
 		65D8494A2FAFD46B00AFEEAA /* FivePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */; };
@@ -87,6 +88,7 @@
 		656530802FB1651400960103 /* RECENT_UPDATES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = RECENT_UPDATES.md; sourceTree = "<group>"; };
 		656530822FB1662A00960103 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		656530842FB166DF00960103 /* DESIGN_UPDATE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DESIGN_UPDATE.md; sourceTree = "<group>"; };
+		656530862FB167B800960103 /* LOTUS_WHEEL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LOTUS_WHEEL.md; sourceTree = "<group>"; };
 		65D7671A2B1FC4B10061A443 /* EightPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EightPlayer.swift; sourceTree = "<group>"; };
 		65D849472FAFD17500AFEEAA /* SevenPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenPlayer.swift; sourceTree = "<group>"; };
 		65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FivePlayerSplit.swift; sourceTree = "<group>"; };
@@ -173,6 +175,7 @@
 				6565307C2FB162A300960103 /* PRO_BADGE_LOCATION.md */,
 				656530802FB1651400960103 /* RECENT_UPDATES.md */,
 				656530822FB1662A00960103 /* DesignSystem.swift */,
+				656530862FB167B800960103 /* LOTUS_WHEEL.md */,
 			);
 			path = LifeCounterFromScratchT1;
 			sourceTree = "<group>";
@@ -311,6 +314,7 @@
 			files = (
 				651093052B1D755100213E0C /* Preview Assets.xcassets in Resources */,
 				656530812FB1651400960103 /* RECENT_UPDATES.md in Resources */,
+				656530872FB167B800960103 /* LOTUS_WHEEL.md in Resources */,
 				656530782FB15F7F00960103 /* MONETIZATION_SETUP.md in Resources */,
 				656530852FB166DF00960103 /* DESIGN_UPDATE.md in Resources */,
 				6565307A2FB15FAB00960103 /* QUICK_START.md in Resources */,

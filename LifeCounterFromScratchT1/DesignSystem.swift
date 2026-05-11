@@ -79,6 +79,75 @@ struct Petal: Shape {
     }
 }
 
+// Interactive lotus wheel petal - beautiful rounded petal shape!
+struct LotusWheelPetal: Shape {
+    let petalIndex: Int
+    let totalPetals: Int
+    let innerRadiusRatio: CGFloat
+    
+    func path(in rect: CGRect) -> Path {
+        let center = CGPoint(x: rect.midX, y: rect.midY)
+        let outerRadius = min(rect.width, rect.height) / 2
+        let innerRadius = outerRadius * innerRadiusRatio
+        
+        // Calculate angles for this petal
+        let anglePerPetal = 360.0 / Double(totalPetals)
+        let midAngle = Double(petalIndex) * anglePerPetal - 90
+        let startAngle = midAngle - anglePerPetal / 2
+        let endAngle = midAngle + anglePerPetal / 2
+        
+        var path = Path()
+        
+        // Extended petal tip for pointed end
+        let petalTipRadius = outerRadius * 1.18
+        
+        // Start at inner edge (base of petal)
+        path.move(to: pointOnCircle(center: center, radius: innerRadius, angle: startAngle))
+        
+        // Widen slightly as we go out
+        let baseLeftOuter = pointOnCircle(center: center, radius: outerRadius * 0.88, angle: startAngle)
+        path.addLine(to: baseLeftOuter)
+        
+        // Left curve - rounded side of petal going up to tip
+        let leftControl1 = pointOnCircle(center: center, radius: outerRadius * 1.0, angle: startAngle + anglePerPetal * 0.2)
+        let leftControl2 = pointOnCircle(center: center, radius: outerRadius * 1.12, angle: midAngle - anglePerPetal * 0.15)
+        let tipPoint = pointOnCircle(center: center, radius: petalTipRadius, angle: midAngle)
+        
+        path.addCurve(to: tipPoint, control1: leftControl1, control2: leftControl2)
+        
+        // Right curve - rounded side coming back down from tip  
+        let rightControl1 = pointOnCircle(center: center, radius: outerRadius * 1.12, angle: midAngle + anglePerPetal * 0.15)
+        let rightControl2 = pointOnCircle(center: center, radius: outerRadius * 1.0, angle: endAngle - anglePerPetal * 0.2)
+        let baseRightOuter = pointOnCircle(center: center, radius: outerRadius * 0.88, angle: endAngle)
+        
+        path.addCurve(to: baseRightOuter, control1: rightControl1, control2: rightControl2)
+        
+        // Line back to inner edge
+        let innerEnd = pointOnCircle(center: center, radius: innerRadius, angle: endAngle)
+        path.addLine(to: innerEnd)
+        
+        // Inner arc to close the petal
+        path.addArc(
+            center: center,
+            radius: innerRadius,
+            startAngle: .degrees(endAngle),
+            endAngle: .degrees(startAngle),
+            clockwise: true
+        )
+        
+        path.closeSubpath()
+        return path
+    }
+    
+    private func pointOnCircle(center: CGPoint, radius: CGFloat, angle: Double) -> CGPoint {
+        let radians = angle * .pi / 180
+        return CGPoint(
+            x: center.x + radius * cos(radians),
+            y: center.y + radius * sin(radians)
+        )
+    }
+}
+
 // Animated rotating lotus background
 struct AnimatedLotusBackground: View {
     @State private var rotation: Double = 0

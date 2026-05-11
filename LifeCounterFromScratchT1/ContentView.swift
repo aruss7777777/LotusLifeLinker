@@ -577,50 +577,51 @@ struct ContentView: View {
         activeView == "InGameMenu" ? previousView : activeView
     }
 
+    private var mainMenuProStatusText: String? {
+        guard storeManager.hasProAccess else {
+            return nil
+        }
+
+        if let remainingTime = storeManager.remainingProTime() {
+            return "Pro: \(formatProTime(remainingTime))"
+        }
+
+        return "Pro"
+    }
+
     var body: some View {
         ZStack {
             if displayedView == "MainMenu" {
-                ZStack {
-                    MainMenu(
-                        onMenuSelection: { selectedView in
-                            // Check if pro feature is required
-                            if requiresProAccess(selectedView) && !storeManager.hasProAccess {
-                                showingProUpgrade = true
-                                return
-                            }
-                            // Show starting life selector
-                            pendingGameView = selectedView
-                            showingStartingLifeSelector = true
-                        },
-                        savedGames: savedGames,
-                        onLoadGame: { game in
-                            // Check if loading games requires pro
-                            if !storeManager.hasProAccess {
-                                showingProUpgrade = true
-                                return
-                            }
-                            loadGame(game)
-                        },
-                        onDeleteGame: { id in
-                            GameSaveManager.delete(id)
-                            savedGames = GameSaveManager.loadAll()
-                        },
-                        onChooseFirst: {
-                            showingPlayerChooser = true
-                        },
-                        keepScreenAwake: $keepScreenAwake
-                    )
-                    
-                    // Pro status badge - only on main menu (top left)
-                    VStack {
-                        HStack {
-                            ProStatusBadge(storeManager: storeManager)
-                                .padding()
-                            Spacer()
+                MainMenu(
+                    onMenuSelection: { selectedView in
+                        // Check if pro feature is required
+                        if requiresProAccess(selectedView) && !storeManager.hasProAccess {
+                            showingProUpgrade = true
+                            return
                         }
-                        Spacer()
-                    }
-                }
+                        // Show starting life selector
+                        pendingGameView = selectedView
+                        showingStartingLifeSelector = true
+                    },
+                    savedGames: savedGames,
+                    onLoadGame: { game in
+                        // Check if loading games requires pro
+                        if !storeManager.hasProAccess {
+                            showingProUpgrade = true
+                            return
+                        }
+                        loadGame(game)
+                    },
+                    onDeleteGame: { id in
+                        GameSaveManager.delete(id)
+                        savedGames = GameSaveManager.loadAll()
+                    },
+                    onChooseFirst: {
+                        showingPlayerChooser = true
+                    },
+                    proStatusText: mainMenuProStatusText,
+                    keepScreenAwake: $keepScreenAwake
+                )
             } else if displayedView == "OnePlayer" {
                 OnePlayer(
                     playerLives: $onePlayerLives,
@@ -981,6 +982,17 @@ struct ContentView: View {
             return true
         }
         return false
+    }
+
+    private func formatProTime(_ timeInterval: TimeInterval) -> String {
+        let hours = Int(timeInterval) / 3600
+        let minutes = (Int(timeInterval) % 3600) / 60
+
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        }
+
+        return "\(minutes)m"
     }
     
     // MARK: - Starting Life Setup

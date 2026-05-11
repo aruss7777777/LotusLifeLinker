@@ -49,6 +49,7 @@ struct MainMenu: View {
     var onLoadGame: ((SavedGame) -> Void)? = nil
     var onDeleteGame: ((UUID) -> Void)? = nil
     var onChooseFirst: (() -> Void)? = nil
+    var proStatusText: String? = nil
     @Binding var keepScreenAwake: Bool
 
     @State private var wheelRotation: Double = 0
@@ -64,8 +65,9 @@ struct MainMenu: View {
     private let segmentDegrees: Double = 45
 
     private var selectedPlayerCount: Int {
-        let index = positiveModulo(Int((-wheelRotation / segmentDegrees).rounded()), playerCounts.count)
-        return playerCounts[index]
+        // The selected petal is the one whose center is aligned with 12 o'clock.
+        let selectedIndex = positiveModulo(Int((-wheelRotation / segmentDegrees).rounded()), playerCounts.count)
+        return playerCounts[selectedIndex]
     }
 
     var body: some View {
@@ -87,13 +89,22 @@ struct MainMenu: View {
                     .ignoresSafeArea()
 
                 VStack(spacing: 14) {
-                    Text("Select Players")
-                        .font(.system(size: 30, weight: .bold, design: .rounded))
-                        .multilineTextAlignment(.center)
-                        .foregroundStyle(Color.textPrimary)
+                    VStack(spacing: 8) {
+                        if let proStatusText {
+                            proStatusBadge(text: proStatusText)
+                        }
+
+                        Text("Select Players")
+                            .font(.system(size: 30, weight: .bold, design: .rounded))
+                            .multilineTextAlignment(.center)
+                            .foregroundStyle(Color.textPrimary)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .zIndex(2)
 
                     let wheelSize = min(geometry.size.width * 0.78, 310)
                     wheelSelector(size: wheelSize)
+                        .zIndex(1)
 
                     // Fixed-height container so the wheel doesn't shift
                     ZStack {
@@ -190,6 +201,25 @@ struct MainMenu: View {
                     settingsOverlay
                 }
             }
+        }
+    }
+
+    private func proStatusBadge(text: String) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: "crown.fill")
+                .font(.system(size: 12, weight: .bold))
+
+            Text(text)
+                .font(.system(size: 13, weight: .bold, design: .rounded))
+        }
+        .foregroundStyle(Color.proBadge)
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(Color.black.opacity(0.28))
+        .clipShape(RoundedRectangle(cornerRadius: 10))
+        .overlay {
+            RoundedRectangle(cornerRadius: 10)
+                .stroke(Color.proBadge.opacity(0.45), lineWidth: 1)
         }
     }
 
@@ -342,88 +372,111 @@ struct MainMenu: View {
         let labelRadius = size * 0.34
 
         return ZStack {
-            // Outer circle with lotus background
+            // Outer circle - subtle background glow
             Circle()
-                .fill(Color.white)
-                .overlay {
-                    // Lotus symbol in the center of the wheel
-                    LotusSymbol(size: size * 0.7, color: Color.appSecondary.opacity(0.15))
-                }
-                .overlay {
-                    Circle()
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.appPrimary, Color.appAccent],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 6
+                .fill(
+                    RadialGradient(
+                        colors: [Color.white, Color.appSecondary.opacity(0.3)],
+                        center: .center,
+                        startRadius: 0,
+                        endRadius: size / 2
+                    )
+                )
+                .shadow(color: Color.appPrimary.opacity(0.2), radius: 20, y: 10)
+
+            // The petals and numbers live in one layer so they spin together.
+            ZStack {
+                ForEach(playerCounts, id: \.self) { count in
+                    let isSelected = count == selectedPlayerCount
+
+                    LotusWheelPetal(
+                        petalIndex: count - 1,
+                        totalPetals: playerCounts.count,
+                        innerRadiusRatio: 0.40
+                    )
+                    .fill(
+                        LinearGradient(
+                            colors: isSelected
+                                ? [Color.appAccent, Color.appAccent.opacity(0.8)]
+                                : petalGradient(for: count),
+                            startPoint: .top,
+                            endPoint: .bottom
                         )
-                }
-                .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
-
-            ForEach(playerCounts, id: \.self) { count in
-                let centerAngle = Double(count - 1) * segmentDegrees
-                let isSelected = count == selectedPlayerCount
-
-                WheelWedge(
-                    startAngle: .degrees(centerAngle - (segmentDegrees / 2) - 90 + wheelRotation),
-                    endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
-                    innerRadiusRatio: 0.42
-                )
-                .fill(isSelected ? Color.appAccent : wedgeColor(for: count))
-                .contentShape(
-                    WheelWedge(
-                        startAngle: .degrees(centerAngle - (segmentDegrees / 2) - 90 + wheelRotation),
-                        endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
-                        innerRadiusRatio: 0.42
                     )
-                )
-                .onTapGesture {
-                    spinToPlayerCount(count)
-                }
-                .overlay {
-                    WheelWedge(
-                        startAngle: .degrees(centerAngle - (segmentDegrees / 2) - 90 + wheelRotation),
-                        endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
-                        innerRadiusRatio: 0.42
-                    )
-                    .stroke(Color.appPrimary.opacity(0.3), lineWidth: 2)
+                    .overlay {
+                        LotusWheelPetal(
+                            petalIndex: count - 1,
+                            totalPetals: playerCounts.count,
+                            innerRadiusRatio: 0.40
+                        )
+                        .stroke(
+                            isSelected
+                                ? Color.white.opacity(0.55)
+                                : Color.appPrimary.opacity(0.2),
+                            lineWidth: isSelected ? 3 : 1
+                        )
+                    }
                 }
 
-                Text("\(count)")
-                    .font(.system(size: isSelected ? 40 : 34, weight: .black, design: .rounded))
-                    .foregroundStyle(isSelected ? .white : Color.textPrimary)
-                    .offset(y: -labelRadius)
-                    .rotationEffect(.degrees(centerAngle + wheelRotation))
-                    .allowsHitTesting(false)
+                ForEach(playerCounts, id: \.self) { count in
+                    let isSelected = count == selectedPlayerCount
+                    let petalAngle = Double(count - 1) * segmentDegrees
+
+                    Text("\(count)")
+                        .font(.system(size: isSelected ? 42 : 36, weight: .black, design: .rounded))
+                        .foregroundStyle(isSelected ? .white : Color.textPrimary)
+                        .shadow(color: isSelected ? .black.opacity(0.3) : .clear, radius: 2)
+                        .offset(y: -labelRadius)
+                        .frame(width: size, height: size)
+                        .rotationEffect(.degrees(petalAngle))
+                        .allowsHitTesting(false)
+                }
             }
+            .rotationEffect(.degrees(wheelRotation))
 
+            // Center circle - START button
             Button {
                 onMenuSelection(selectedViewName)
             } label: {
-                VStack(spacing: 2) {
-                    Image(systemName: "arrowtriangle.up.fill")
-                        .font(.system(size: 20, weight: .black))
-
-                    Text("START")
-                        .font(.system(size: 24, weight: .black, design: .rounded))
-                }
-                .foregroundStyle(.white)
-                .frame(width: size * 0.42, height: size * 0.42)
-                .background(
-                    LinearGradient(
-                        colors: [Color.buttonPrimary, Color.appAccent],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .clipShape(Circle())
-                .overlay {
+                ZStack {
+                    // Inner glow effect
                     Circle()
-                        .stroke(Color(red: 1.0, green: 0.9, blue: 0.55), lineWidth: 4)
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.white.opacity(0.3), Color.clear],
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: size * 0.2
+                            )
+                        )
+                        .frame(width: size * 0.38, height: size * 0.38)
+                    
+                    // Main button
+                    VStack(spacing: 2) {
+                        Image(systemName: "arrowtriangle.up.fill")
+                            .font(.system(size: 22, weight: .black))
+
+                        Text("START")
+                            .font(.system(size: 26, weight: .black, design: .rounded))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(width: size * 0.38, height: size * 0.38)
+                    .background(
+                        Circle()
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.buttonPrimary, Color.appAccent],
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                    )
+                    .overlay {
+                        Circle()
+                            .stroke(Color.white.opacity(0.3), lineWidth: 2)
+                    }
+                    .shadow(color: Color.appPrimary.opacity(0.4), radius: 10, y: 5)
                 }
-                .shadow(color: .black.opacity(0.25), radius: 8, y: 5)
             }
         }
         .frame(width: size, height: size)
@@ -433,10 +486,15 @@ struct MainMenu: View {
                 .onChanged { value in
                     updateWheelRotation(with: value, size: size)
                 }
-                .onEnded { _ in
+                .onEnded { value in
                     dragStartAngle = nil
-                    withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
-                        wheelRotation = (wheelRotation / segmentDegrees).rounded() * segmentDegrees
+
+                    if isTap(value) {
+                        spinToTappedPetal(at: value.location, size: size)
+                    } else {
+                        withAnimation(.spring(response: 0.32, dampingFraction: 0.82)) {
+                            wheelRotation = (wheelRotation / segmentDegrees).rounded() * segmentDegrees
+                        }
                     }
                 }
         )
@@ -646,6 +704,21 @@ struct MainMenu: View {
             ? Color(red: 0.9, green: 0.95, blue: 1.0)    // Very light blue
             : Color(red: 0.95, green: 0.97, blue: 1.0)   // Almost white with blue tint
     }
+    
+    private func petalGradient(for count: Int) -> [Color] {
+        // Alternating petal gradients for beautiful lotus effect
+        if count.isMultiple(of: 2) {
+            return [
+                Color(red: 0.85, green: 0.92, blue: 1.0),  // Light blue
+                Color(red: 0.92, green: 0.96, blue: 1.0)   // Lighter blue
+            ]
+        } else {
+            return [
+                Color(red: 0.90, green: 0.94, blue: 1.0),  // Very light blue
+                Color(red: 0.95, green: 0.97, blue: 1.0)   // Almost white
+            ]
+        }
+    }
 
     private func updateWheelRotation(with value: DragGesture.Value, size: CGFloat) {
         let center = CGPoint(x: size / 2, y: size / 2)
@@ -664,6 +737,17 @@ struct MainMenu: View {
         wheelRotation = dragStartRotation + currentAngle - dragStartAngle
     }
 
+    private func isTap(_ value: DragGesture.Value) -> Bool {
+        abs(value.translation.width) < 8 && abs(value.translation.height) < 8
+    }
+
+    private func spinToTappedPetal(at location: CGPoint, size: CGFloat) {
+        let center = CGPoint(x: size / 2, y: size / 2)
+        let tappedAngle = angle(for: location, center: center)
+        let wheelAngle = positiveModulo(Int(((tappedAngle - wheelRotation) / segmentDegrees).rounded()), playerCounts.count)
+        spinToPlayerCount(playerCounts[wheelAngle])
+    }
+
     private func spinToPlayerCount(_ count: Int) {
         guard let targetIndex = playerCounts.firstIndex(of: count) else {
             return
@@ -671,11 +755,16 @@ struct MainMenu: View {
 
         dragStartAngle = nil
         let targetRotation = -Double(targetIndex) * segmentDegrees
-        let rotationsToTarget = ((targetRotation - wheelRotation) / segmentDegrees).rounded()
+        let shortestDelta = normalizedRotationDelta(from: wheelRotation, to: targetRotation)
 
         withAnimation(.spring(response: 0.36, dampingFraction: 0.82)) {
-            wheelRotation += rotationsToTarget * segmentDegrees
+            wheelRotation += shortestDelta
         }
+    }
+
+    private func normalizedRotationDelta(from currentRotation: Double, to targetRotation: Double) -> Double {
+        let rawDelta = targetRotation - currentRotation
+        return rawDelta - (rawDelta / 360).rounded() * 360
     }
 
     private func angle(for point: CGPoint, center: CGPoint) -> Double {
