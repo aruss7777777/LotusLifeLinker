@@ -8,7 +8,7 @@ class StoreManager: ObservableObject {
     @Published private(set) var purchasedProductIDs: Set<String> = []
     @Published private(set) var proExpirationDate: Date?
     
-    private let productID = "com.yourapp.commandertracker.pro"
+    private let productID = "com.forge_technology.lotuslifelinker.pro"
     private var updateListenerTask: Task<Void, Error>?
     
     init() {

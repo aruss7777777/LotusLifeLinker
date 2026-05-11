@@ -6,14 +6,12 @@
 //
 
 import SwiftUI
-// import GoogleMobileAds // Temporarily disabled - uncomment after installing SDK
+import GoogleMobileAds
 
 @main
 struct LifeCounterFromScratchT1App: App {
     init() {
-        // Initialize Google Mobile Ads SDK
-        // Temporarily disabled - uncomment after installing SDK
-        // GADMobileAds.sharedInstance().start(completionHandler: nil)
+        MobileAds.shared.start()
     }
     
     var body: some Scene {

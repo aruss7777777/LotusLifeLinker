@@ -3,7 +3,7 @@ import SwiftUI
 struct ProUpgradeView: View {
     @ObservedObject var storeManager: StoreManager
     @ObservedObject var adManager: AdManager
-    @Environment(\.dismiss) var dismiss
+    let onDismiss: () -> Void
     
     var body: some View {
         ZStack {
@@ -46,7 +46,7 @@ struct ProUpgradeView: View {
                         Button {
                             Task {
                                 try? await storeManager.purchase(product)
-                                dismiss()
+                                onDismiss()
                             }
                         } label: {
                             VStack(spacing: 4) {
@@ -74,7 +74,7 @@ struct ProUpgradeView: View {
                            let viewController = windowScene.windows.first?.rootViewController {
                             adManager.onAdRewarded = {
                                 storeManager.grantTemporaryProAccess()
-                                dismiss()
+                                onDismiss()
                             }
                             adManager.showRewardedAd(from: viewController)
                         }
@@ -105,23 +105,23 @@ struct ProUpgradeView: View {
                     Button {
                         Task {
                             await storeManager.restorePurchases()
-                            dismiss()
+                            onDismiss()
                         }
                     } label: {
                         Text("Restore Purchases")
-                            .font(.subheadline)
-                            .foregroundStyle(.blue)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
                     }
                 }
                 .padding(.horizontal, 20)
                 
                 // Close Button
                 Button {
-                    dismiss()
+                    onDismiss()
                 } label: {
                     Text("Maybe Later")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
                 }
                 .padding(.bottom, 20)
             }
@@ -191,6 +191,7 @@ struct ProStatusBadge: View {
 #Preview {
     ProUpgradeView(
         storeManager: StoreManager(),
-        adManager: AdManager()
+        adManager: AdManager(),
+        onDismiss: {}
     )
 }

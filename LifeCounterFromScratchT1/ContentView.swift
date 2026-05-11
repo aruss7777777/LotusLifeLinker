@@ -205,6 +205,24 @@ struct OutlinedPlayerText: View {
     }
 }
 
+enum PlayerTextSizing {
+    private static var deviceScale: CGFloat {
+        UIDevice.current.userInterfaceIdiom == .pad ? 1.35 : 1
+    }
+
+    private static func scaled(_ baseSize: CGFloat) -> CGFloat {
+        baseSize * deviceScale
+    }
+
+    static func lifeFont(baseSize: CGFloat) -> Font {
+        .system(size: scaled(baseSize), weight: .regular, design: .rounded)
+    }
+
+    static func nameFont(baseSize: CGFloat) -> Font {
+        .system(size: scaled(baseSize), weight: .semibold)
+    }
+}
+
 struct PlayerBackgroundView: View {
     let style: PlayerBoxStyle
     var imageRotation: Angle = .degrees(0)
@@ -929,13 +947,15 @@ struct ContentView: View {
             }
             
             if showingProUpgrade {
-                ProUpgradeView(storeManager: storeManager, adManager: adManager)
-                    .transition(.opacity)
-                    .zIndex(100)
-                    .onDisappear {
-                        // Refresh when dismissed
+                ProUpgradeView(
+                    storeManager: storeManager,
+                    adManager: adManager,
+                    onDismiss: {
                         showingProUpgrade = false
                     }
+                )
+                .transition(.opacity)
+                .zIndex(100)
             }
             
             if showingStartingLifeSelector, let gameView = pendingGameView {

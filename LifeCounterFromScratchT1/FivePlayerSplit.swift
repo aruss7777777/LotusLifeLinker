@@ -144,7 +144,7 @@ struct FivePlayerSplit: View {
         VStack(spacing: 8) {
             OutlinedPlayerText(
                 text: "\(life)",
-                font: .system(size: 72, weight: .regular, design: .rounded),
+                font: PlayerTextSizing.lifeFont(baseSize: 72),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.45,
@@ -153,7 +153,7 @@ struct FivePlayerSplit: View {
 
             OutlinedPlayerText(
                 text: name,
-                font: .system(size: 22, weight: .semibold),
+                font: PlayerTextSizing.nameFont(baseSize: 22),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.6

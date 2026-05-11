@@ -33,6 +33,7 @@
 		656530832FB1662A00960103 /* DesignSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656530822FB1662A00960103 /* DesignSystem.swift */; };
 		656530852FB166DF00960103 /* DESIGN_UPDATE.md in Resources */ = {isa = PBXBuildFile; fileRef = 656530842FB166DF00960103 /* DESIGN_UPDATE.md */; };
 		656530872FB167B800960103 /* LOTUS_WHEEL.md in Resources */ = {isa = PBXBuildFile; fileRef = 656530862FB167B800960103 /* LOTUS_WHEEL.md */; };
+		6565308A2FB17A3300960103 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = 656530892FB17A3300960103 /* GoogleMobileAds */; };
 		65D7671B2B1FC4B10061A443 /* EightPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D7671A2B1FC4B10061A443 /* EightPlayer.swift */; };
 		65D849482FAFD17500AFEEAA /* SevenPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849472FAFD17500AFEEAA /* SevenPlayer.swift */; };
 		65D8494A2FAFD46B00AFEEAA /* FivePlayerSplit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */; };
@@ -89,6 +90,7 @@
 		656530822FB1662A00960103 /* DesignSystem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignSystem.swift; sourceTree = "<group>"; };
 		656530842FB166DF00960103 /* DESIGN_UPDATE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DESIGN_UPDATE.md; sourceTree = "<group>"; };
 		656530862FB167B800960103 /* LOTUS_WHEEL.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LOTUS_WHEEL.md; sourceTree = "<group>"; };
+		6565308B2FB17C5C00960103 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		65D7671A2B1FC4B10061A443 /* EightPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EightPlayer.swift; sourceTree = "<group>"; };
 		65D849472FAFD17500AFEEAA /* SevenPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SevenPlayer.swift; sourceTree = "<group>"; };
 		65D849492FAFD46B00AFEEAA /* FivePlayerSplit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FivePlayerSplit.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6565308A2FB17A3300960103 /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -133,6 +136,7 @@
 				651092FB2B1D755000213E0C /* Products */,
 				6565307E2FB1647500960103 /* StartingLifeSelector.swift */,
 				656530842FB166DF00960103 /* DESIGN_UPDATE.md */,
+				656530882FB17A3300960103 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -149,6 +153,7 @@
 		651092FC2B1D755000213E0C /* LifeCounterFromScratchT1 */ = {
 			isa = PBXGroup;
 			children = (
+				6565308B2FB17C5C00960103 /* Info.plist */,
 				651092FD2B1D755000213E0C /* LifeCounterFromScratchT1App.swift */,
 				651092FF2B1D755000213E0C /* ContentView.swift */,
 				651BD3F92B1EC53C00B77C42 /* FourPlayer.swift */,
@@ -203,6 +208,13 @@
 				6510931A2B1D755200213E0C /* LifeCounterFromScratchT1UITestsLaunchTests.swift */,
 			);
 			path = LifeCounterFromScratchT1UITests;
+			sourceTree = "<group>";
+		};
+		656530882FB17A3300960103 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -533,6 +545,7 @@
 				DEVELOPMENT_TEAM = 3PUYQHMCMV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LifeCounterFromScratchT1/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lotus Life Linker";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -564,6 +577,7 @@
 				DEVELOPMENT_TEAM = 3PUYQHMCMV;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = LifeCounterFromScratchT1/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Lotus Life Linker";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -709,6 +723,14 @@
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		656530892FB17A3300960103 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6565307B2FB1613100960103 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 651092F22B1D755000213E0C /* Project object */;
 }

@@ -147,7 +147,7 @@ struct SevenPlayerSplit: View {
         VStack(spacing: 6) {
             OutlinedPlayerText(
                 text: "\(life)",
-                font: .system(size: 64, weight: .regular, design: .rounded),
+                font: PlayerTextSizing.lifeFont(baseSize: 64),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.45,
@@ -156,7 +156,7 @@ struct SevenPlayerSplit: View {
 
             OutlinedPlayerText(
                 text: name,
-                font: .system(size: 20, weight: .semibold),
+                font: PlayerTextSizing.nameFont(baseSize: 20),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.6

@@ -90,7 +90,7 @@ struct OnePlayer: View {
         VStack(spacing: 8) {
             OutlinedPlayerText(
                 text: "\(life)",
-                font: .system(size: 120, weight: .regular, design: .rounded),
+                font: PlayerTextSizing.lifeFont(baseSize: 120),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.45,
@@ -99,7 +99,7 @@ struct OnePlayer: View {
 
             OutlinedPlayerText(
                 text: name,
-                font: .system(size: 28, weight: .semibold),
+                font: PlayerTextSizing.nameFont(baseSize: 28),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.6

@@ -113,7 +113,7 @@ struct TwoPlayer: View {
         VStack(spacing: 8) {
             OutlinedPlayerText(
                 text: "\(life)",
-                font: .system(size: 110, weight: .regular, design: .rounded),
+                font: PlayerTextSizing.lifeFont(baseSize: 110),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.45,
@@ -122,7 +122,7 @@ struct TwoPlayer: View {
 
             OutlinedPlayerText(
                 text: name,
-                font: .system(size: 26, weight: .semibold),
+                font: PlayerTextSizing.nameFont(baseSize: 26),
                 color: color,
                 isOutlined: isOutlined,
                 minimumScaleFactor: 0.6
