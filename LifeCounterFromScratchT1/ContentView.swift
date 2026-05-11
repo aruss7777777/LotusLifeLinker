@@ -448,6 +448,11 @@ struct PlayerCustomizationPanel: View {
 }
 
 struct ContentView: View {
+    @StateObject private var storeManager = StoreManager()
+    @StateObject private var adManager = AdManager()
+    @State private var showingProUpgrade = false
+    @State private var showingStartingLifeSelector = false
+    @State private var pendingGameView: String?
     @State private var activeView: String = "MainMenu"
     @State private var previousView: String = "MainMenu"
     @State private var onePlayerStyles: [PlayerBoxStyle] = [
@@ -575,24 +580,47 @@ struct ContentView: View {
     var body: some View {
         ZStack {
             if displayedView == "MainMenu" {
-                MainMenu(
-                    onMenuSelection: { selectedView in
-                        resetSpecialDamage(for: playerCount(for: selectedView))
-                        activeView = selectedView
-                    },
-                    savedGames: savedGames,
-                    onLoadGame: { game in
-                        loadGame(game)
-                    },
-                    onDeleteGame: { id in
-                        GameSaveManager.delete(id)
-                        savedGames = GameSaveManager.loadAll()
-                    },
-                    onChooseFirst: {
-                        showingPlayerChooser = true
-                    },
-                    keepScreenAwake: $keepScreenAwake
-                )
+                ZStack {
+                    MainMenu(
+                        onMenuSelection: { selectedView in
+                            // Check if pro feature is required
+                            if requiresProAccess(selectedView) && !storeManager.hasProAccess {
+                                showingProUpgrade = true
+                                return
+                            }
+                            // Show starting life selector
+                            pendingGameView = selectedView
+                            showingStartingLifeSelector = true
+                        },
+                        savedGames: savedGames,
+                        onLoadGame: { game in
+                            // Check if loading games requires pro
+                            if !storeManager.hasProAccess {
+                                showingProUpgrade = true
+                                return
+                            }
+                            loadGame(game)
+                        },
+                        onDeleteGame: { id in
+                            GameSaveManager.delete(id)
+                            savedGames = GameSaveManager.loadAll()
+                        },
+                        onChooseFirst: {
+                            showingPlayerChooser = true
+                        },
+                        keepScreenAwake: $keepScreenAwake
+                    )
+                    
+                    // Pro status badge - only on main menu (top left)
+                    VStack {
+                        HStack {
+                            ProStatusBadge(storeManager: storeManager)
+                                .padding()
+                            Spacer()
+                        }
+                        Spacer()
+                    }
+                }
             } else if displayedView == "OnePlayer" {
                 OnePlayer(
                     playerLives: $onePlayerLives,
@@ -880,6 +908,11 @@ struct ContentView: View {
                         showingPlayerChooser = true
                     },
                     playerNames: currentNames(),
+                    hasProAccess: storeManager.hasProAccess,
+                    proRemainingTime: storeManager.remainingProTime(),
+                    onShowProUpgrade: {
+                        showingProUpgrade = true
+                    },
                     commanderDamage: $commanderDamage,
                     poisonDamage: $poisonDamage,
                     showSpecialDamageDeaths: $showSpecialDamageDeaths,
@@ -893,18 +926,85 @@ struct ContentView: View {
                 })
                 .transition(.opacity)
             }
+            
+            if showingProUpgrade {
+                ProUpgradeView(storeManager: storeManager, adManager: adManager)
+                    .transition(.opacity)
+                    .zIndex(100)
+                    .onDisappear {
+                        // Refresh when dismissed
+                        showingProUpgrade = false
+                    }
+            }
+            
+            if showingStartingLifeSelector, let gameView = pendingGameView {
+                StartingLifeSelector(
+                    playerCount: playerCount(for: gameView),
+                    onStartGame: { startingLife in
+                        showingStartingLifeSelector = false
+                        setStartingLife(startingLife, for: gameView)
+                        resetSpecialDamage(for: playerCount(for: gameView))
+                        activeView = gameView
+                        pendingGameView = nil
+                    },
+                    onCancel: {
+                        showingStartingLifeSelector = false
+                        pendingGameView = nil
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(99)
+            }
         }
         .animation(.easeInOut(duration: 0.3), value: showingPlayerChooser)
+        .animation(.easeInOut(duration: 0.3), value: showingProUpgrade)
+        .animation(.easeInOut(duration: 0.3), value: showingStartingLifeSelector)
         .statusBarHidden(true)
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = keepScreenAwake
             savedGames = GameSaveManager.loadAll()
+            storeManager.loadTemporaryProAccess()
         }
         .onChange(of: keepScreenAwake) { _, newValue in
             UIApplication.shared.isIdleTimerDisabled = newValue
         }
         .onDisappear {
             UIApplication.shared.isIdleTimerDisabled = false
+        }
+    }
+    
+    // MARK: - Pro Access Check
+    
+    private func requiresProAccess(_ viewName: String) -> Bool {
+        // 7 and 8 player modes require pro
+        if viewName == "SevenPlayer" || viewName == "SevenPlayerSplit" || viewName == "EightPlayer" {
+            return true
+        }
+        return false
+    }
+    
+    // MARK: - Starting Life Setup
+    
+    private func setStartingLife(_ life: Int, for viewName: String) {
+        switch viewName {
+        case "OnePlayer":
+            onePlayerLives = [life]
+        case "TwoPlayer":
+            twoPlayerLives = [life, life]
+        case "ThreePlayer", "ThreePlayerSplit":
+            threePlayerLives = [life, life, life]
+        case "FourPlayer":
+            fourPlayerLives = [life, life, life, life]
+        case "FivePlayer", "FivePlayerSplit":
+            fivePlayerLives = [life, life, life, life, life]
+        case "SixPlayer":
+            sixPlayerLives = [life, life, life, life, life, life]
+        case "SevenPlayer", "SevenPlayerSplit":
+            sevenPlayerLives = [life, life, life, life, life, life, life]
+        case "EightPlayer":
+            eightPlayerLives = [life, life, life, life, life, life, life, life]
+        default:
+            break
         }
     }
 
@@ -963,7 +1063,7 @@ struct ContentView: View {
     }
 
     private var specialDamageDeaths: [Bool] {
-        guard showSpecialDamageDeaths else {
+        guard showSpecialDamageDeaths && storeManager.hasProAccess else {
             return Array(repeating: false, count: currentNames().count)
         }
 

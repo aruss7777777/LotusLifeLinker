@@ -9,6 +9,9 @@ struct InGameMenu: View {
     var onSaveGame: ((String) -> Void)? = nil
     var onChooseFirst: (() -> Void)? = nil
     var playerNames: [String] = []
+    var hasProAccess: Bool = false
+    var proRemainingTime: TimeInterval? = nil
+    var onShowProUpgrade: (() -> Void)? = nil
     @Binding var commanderDamage: [[Int]]
     @Binding var poisonDamage: [Int]
     @Binding var showSpecialDamageDeaths: Bool
@@ -88,9 +91,20 @@ struct InGameMenu: View {
 
             if canEditPlayerBoxes {
                 Button {
-                    onStartEditingPlayerBoxes?()
+                    if hasProAccess {
+                        onStartEditingPlayerBoxes?()
+                    } else {
+                        onShowProUpgrade?()
+                    }
                 } label: {
-                    menuRow(title: "Customize", systemImage: "pencil")
+                    HStack {
+                        menuRow(title: "Customize", systemImage: "pencil")
+                        if !hasProAccess {
+                            Image(systemName: "crown.fill")
+                                .font(.caption)
+                                .foregroundStyle(.yellow)
+                        }
+                    }
                 }
             } else {
                 menuRow(title: "Customize", systemImage: "pencil")
@@ -105,10 +119,21 @@ struct InGameMenu: View {
             }
 
             Button {
-                selectedCommanderDamageTarget = min(selectedCommanderDamageTarget, max(playerNames.count - 1, 0))
-                showingCommanderDamage = true
+                if hasProAccess {
+                    selectedCommanderDamageTarget = min(selectedCommanderDamageTarget, max(playerNames.count - 1, 0))
+                    showingCommanderDamage = true
+                } else {
+                    onShowProUpgrade?()
+                }
             } label: {
-                menuRow(title: "Special Damage", systemImage: "flame.fill")
+                HStack {
+                    menuRow(title: "Special Damage", systemImage: "flame.fill")
+                    if !hasProAccess {
+                        Image(systemName: "crown.fill")
+                            .font(.caption)
+                            .foregroundStyle(.yellow)
+                    }
+                }
             }
 
             Button {
@@ -118,10 +143,21 @@ struct InGameMenu: View {
             }
 
             Button {
-                saveName = ""
-                showingSaveGame = true
+                if hasProAccess {
+                    saveName = ""
+                    showingSaveGame = true
+                } else {
+                    onShowProUpgrade?()
+                }
             } label: {
-                menuRow(title: "Save Game", systemImage: "square.and.arrow.down.fill")
+                HStack {
+                    menuRow(title: "Save Game", systemImage: "square.and.arrow.down.fill")
+                    if !hasProAccess {
+                        Image(systemName: "crown.fill")
+                            .font(.caption)
+                            .foregroundStyle(.yellow)
+                    }
+                }
             }
 
             Button {
@@ -273,9 +309,54 @@ struct InGameMenu: View {
 
     private var settingsContent: some View {
         Group {
-            Text("Settings")
-                .font(.system(size: 34, weight: .bold, design: .rounded))
-                .foregroundStyle(.black)
+            VStack(spacing: 8) {
+                Text("Settings")
+                    .font(.system(size: 34, weight: .bold, design: .rounded))
+                    .foregroundStyle(.black)
+                
+                // Pro upgrade/extend button
+                Button {
+                    onShowProUpgrade?()
+                } label: {
+                    HStack(spacing: 8) {
+                        Image(systemName: "crown.fill")
+                            .font(.body)
+                            .foregroundStyle(.yellow)
+                        
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("Pro")
+                                .font(.body.bold())
+                                .foregroundStyle(.black)
+                            
+                            if hasProAccess {
+                                if let remainingTime = proRemainingTime {
+                                    Text("Active: \(formatTime(remainingTime)) remaining")
+                                        .font(.caption)
+                                        .foregroundStyle(.black.opacity(0.7))
+                                } else {
+                                    Text("Active")
+                                        .font(.caption)
+                                        .foregroundStyle(.green)
+                                }
+                            } else {
+                                Text("Tap to unlock premium features")
+                                    .font(.caption)
+                                    .foregroundStyle(.black.opacity(0.6))
+                            }
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .background(Color.white.opacity(0.14))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
 
             settingsToggleRow(title: "Keep Screen Awake", isOn: keepScreenAwake) {
                 keepScreenAwake.toggle()
@@ -471,6 +552,17 @@ struct InGameMenu: View {
 
         if normalized != poisonDamage {
             poisonDamage = normalized
+        }
+    }
+    
+    private func formatTime(_ timeInterval: TimeInterval) -> String {
+        let hours = Int(timeInterval) / 3600
+        let minutes = (Int(timeInterval) % 3600) / 60
+        
+        if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
         }
     }
 }
