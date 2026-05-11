@@ -27,7 +27,7 @@ struct InGameMenu: View {
 
     var body: some View {
         ZStack {
-            Color.black.opacity(0.25)
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .contentShape(Rectangle())
 
@@ -44,9 +44,11 @@ struct InGameMenu: View {
             }
             .padding(20)
             .frame(maxWidth: showingCommanderDamage ? 340 : 280)
-            .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 22))
-            .shadow(radius: 18)
+            .background(
+                RoundedRectangle(cornerRadius: 22)
+                    .fill(Color.menuBackground)
+                    .shadow(color: .black.opacity(0.2), radius: 20, y: 10)
+            )
         }
         .alert("Are you sure this will reset scores?", isPresented: $showingHomeConfirmation) {
             Button("No", role: .cancel) {

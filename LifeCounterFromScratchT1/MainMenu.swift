@@ -71,18 +71,26 @@ struct MainMenu: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
+                // New brighter gradient background
                 LinearGradient(
-                    colors: [Color(red: 0.05, green: 0.08, blue: 0.2), Color(red: 0.08, green: 0.12, blue: 0.32)],
-                    startPoint: .top,
-                    endPoint: .bottom
+                    colors: [
+                        Color(red: 0.5, green: 0.7, blue: 1.0),  // Light blue
+                        Color(red: 0.6, green: 0.8, blue: 0.95)  // Lighter blue
+                    ],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
                 .ignoresSafeArea()
+                
+                // Animated lotus background
+                AnimatedLotusBackground()
+                    .ignoresSafeArea()
 
                 VStack(spacing: 14) {
                     Text("Select Players")
                         .font(.system(size: 30, weight: .bold, design: .rounded))
                         .multilineTextAlignment(.center)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.textPrimary)
 
                     let wheelSize = min(geometry.size.width * 0.78, 310)
                     wheelSelector(size: wheelSize)
@@ -110,12 +118,15 @@ struct MainMenu: View {
                         .foregroundStyle(.white)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 24)
-                        .background(Color.white.opacity(0.15))
+                        .background(
+                            LinearGradient(
+                                colors: [Color.buttonSecondary, Color.buttonPrimary],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                         .clipShape(RoundedRectangle(cornerRadius: 14))
-                        .overlay {
-                            RoundedRectangle(cornerRadius: 14)
-                                .stroke(Color.white.opacity(0.3), lineWidth: 1)
-                        }
+                        .shadow(color: Color.buttonPrimary.opacity(0.3), radius: 8, y: 4)
                     }
                     .padding(.bottom, savedGames.isEmpty ? 30 : 8)
 
@@ -331,13 +342,25 @@ struct MainMenu: View {
         let labelRadius = size * 0.34
 
         return ZStack {
+            // Outer circle with lotus background
             Circle()
-                .fill(Color(red: 0.12, green: 0.16, blue: 0.35))
+                .fill(Color.white)
+                .overlay {
+                    // Lotus symbol in the center of the wheel
+                    LotusSymbol(size: size * 0.7, color: Color.appSecondary.opacity(0.15))
+                }
                 .overlay {
                     Circle()
-                        .stroke(Color(red: 0.85, green: 0.7, blue: 0.25), lineWidth: 6)
+                        .stroke(
+                            LinearGradient(
+                                colors: [Color.appPrimary, Color.appAccent],
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 6
+                        )
                 }
-                .shadow(color: .black.opacity(0.4), radius: 12, y: 8)
+                .shadow(color: .black.opacity(0.15), radius: 20, y: 10)
 
             ForEach(playerCounts, id: \.self) { count in
                 let centerAngle = Double(count - 1) * segmentDegrees
@@ -348,7 +371,7 @@ struct MainMenu: View {
                     endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
                     innerRadiusRatio: 0.42
                 )
-                .fill(isSelected ? Color(red: 0.85, green: 0.7, blue: 0.25) : wedgeColor(for: count))
+                .fill(isSelected ? Color.appAccent : wedgeColor(for: count))
                 .contentShape(
                     WheelWedge(
                         startAngle: .degrees(centerAngle - (segmentDegrees / 2) - 90 + wheelRotation),
@@ -365,12 +388,12 @@ struct MainMenu: View {
                         endAngle: .degrees(centerAngle + (segmentDegrees / 2) - 90 + wheelRotation),
                         innerRadiusRatio: 0.42
                     )
-                    .stroke(Color(red: 0.15, green: 0.25, blue: 0.55), lineWidth: 2)
+                    .stroke(Color.appPrimary.opacity(0.3), lineWidth: 2)
                 }
 
                 Text("\(count)")
                     .font(.system(size: isSelected ? 40 : 34, weight: .black, design: .rounded))
-                    .foregroundStyle(isSelected ? .white : Color(red: 0.1, green: 0.15, blue: 0.3))
+                    .foregroundStyle(isSelected ? .white : Color.textPrimary)
                     .offset(y: -labelRadius)
                     .rotationEffect(.degrees(centerAngle + wheelRotation))
                     .allowsHitTesting(false)
@@ -388,7 +411,13 @@ struct MainMenu: View {
                 }
                 .foregroundStyle(.white)
                 .frame(width: size * 0.42, height: size * 0.42)
-                .background(Color(red: 0.85, green: 0.7, blue: 0.25))
+                .background(
+                    LinearGradient(
+                        colors: [Color.buttonPrimary, Color.appAccent],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
                 .clipShape(Circle())
                 .overlay {
                     Circle()
@@ -612,7 +641,10 @@ struct MainMenu: View {
     }
 
     private func wedgeColor(for count: Int) -> Color {
-        count.isMultiple(of: 2) ? Color(white: 0.82) : Color(white: 0.9)
+        // Bright, modern alternating colors
+        count.isMultiple(of: 2) 
+            ? Color(red: 0.9, green: 0.95, blue: 1.0)    // Very light blue
+            : Color(red: 0.95, green: 0.97, blue: 1.0)   // Almost white with blue tint
     }
 
     private func updateWheelRotation(with value: DragGesture.Value, size: CGFloat) {

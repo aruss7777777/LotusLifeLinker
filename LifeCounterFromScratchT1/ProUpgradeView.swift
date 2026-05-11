@@ -7,7 +7,7 @@ struct ProUpgradeView: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.5)
+            Color.black.opacity(0.6)
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
@@ -15,14 +15,15 @@ struct ProUpgradeView: View {
                 VStack(spacing: 8) {
                     Image(systemName: "crown.fill")
                         .font(.system(size: 50))
-                        .foregroundStyle(.yellow)
+                        .foregroundStyle(Color.proBadge)
                     
                     Text("Upgrade to Pro")
                         .font(.title.bold())
+                        .foregroundStyle(Color.textPrimary)
                     
                     Text("Unlock all premium features")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.top, 20)
                 
@@ -35,7 +36,7 @@ struct ProUpgradeView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.vertical, 16)
-                .background(Color.white.opacity(0.08))
+                .background(Color.proBackground)
                 .clipShape(RoundedRectangle(cornerRadius: 12))
                 
                 // Purchase Options

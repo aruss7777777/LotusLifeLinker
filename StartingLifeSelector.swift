@@ -14,7 +14,7 @@ struct StartingLifeSelector: View {
     
     var body: some View {
         ZStack {
-            Color.black.opacity(0.5)
+            Color.black.opacity(0.6)
                 .ignoresSafeArea()
             
             VStack(spacing: 20) {
@@ -22,11 +22,11 @@ struct StartingLifeSelector: View {
                 VStack(spacing: 8) {
                     Text("Starting Life Total")
                         .font(.title.bold())
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.textPrimary)
                     
                     Text("\(playerCount) Player\(playerCount > 1 ? "s" : "")")
                         .font(.subheadline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(Color.textSecondary)
                 }
                 .padding(.top, 20)
                 
